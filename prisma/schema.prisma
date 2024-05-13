@@ -1,0 +1,63 @@
+// Este es tu archivo de esquema Prisma,
+// aprende mas al respecto en la documentacion: https://pris.ly/d/prisma-schema
+
+// Generador para el cliente Prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Fuente de datos para la base de datos MySQL
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelo para el User
+model User {
+  id        Int      @id @default(autoincrement())
+  userId    String   @unique
+  fullName  String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+// Modelo para el Productor
+model Productor {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  telefono  String?
+ 
+  // Otros campos especficos del Productor
+
+  // o con los Pedidos
+  pedidos   Pedido[]
+}
+
+// Modelo para el Transportador
+model Transportador {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  telefono  String?
+  
+  // Otros campos especficos del Transportador
+
+  // o con los Pedidos
+  pedidos   Pedido[]
+}
+
+// Modelo para los Pedidos
+model Pedido {
+  id               Int      @id @default(autoincrement())
+  fechaCreacion    DateTime @default(now())
+  // Otros campos especifico del Pedido
+
+  // o con el Productor
+  productor        Productor @relation(fields: [productorId], references: [id])
+  productorId      Int
+
+  // Relacion con el Transportador
+  transportador    Transportador @relation(fields: [transportadorId], references: [id])
+  transportadorId  Int
+}
