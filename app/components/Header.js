@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';  // Asegura que este componente se renderice en el cliente
+
+import React, { useEffect } from 'react';
 import Image from 'next/image';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 function Header() {
     const headerMenu = [
@@ -15,6 +18,15 @@ function Header() {
             icon: '/logo-usuario.jpg'
         }
     ];
+
+    const router = useRouter();
+    const { isSignedIn } = useUser();
+
+    useEffect(() => {
+        if (isSignedIn) {
+            router.push('/indexPage');
+        }
+    }, [isSignedIn, router]);
 
     return (
         <div className='p-5 pb-3 pl-10 border-b-[2px] border-gray-200 flex items-center justify-between' style={{ backgroundColor: '#212626' }}>
@@ -32,8 +44,9 @@ function Header() {
                                 src={item.icon}
                                 width={20}
                                 height={20}
+                                alt={item.name}
                             />
-                            <h2 className='text-[14px] font-medium'>{item.name}</h2>
+                            <h2 className='text-[14px] font-medium text-white'>{item.name}</h2>
                         </div>
                     ))}
                 </div>
@@ -47,11 +60,10 @@ function Header() {
                 </a>
             </div>
             <div className="mr-4">
-            <UserButton />
+                <UserButton />
             </div>
         </div>
     );
-    
 }
 
 export default Header;
