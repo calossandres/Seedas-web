@@ -1,4 +1,5 @@
-import {  SignedIn  } from '@clerk/nextjs'
+import SearchSection from "../components/Home/SearchSection";
+import GoogleMaps from "../components/Home/GoogleMaps";
 // Componente IndexPage
 export default function IndexPage() {
   return (
@@ -7,13 +8,17 @@ export default function IndexPage() {
      
         {/* Contenido solo visible para usuarios autenticados */}
 
-        <div>Bienvenido a la página de inicio</div>
         
-        <SignedIn>
-          <usuario />
-          </SignedIn>
       {/* Contenido adicional de la página */}
-      
+      <div className='p-6 grid grid-cols-1 md:grid-cols-3 gap-5'>
+      <div>
+        <SearchSection/>
+      </div>
+      <div className='col-span-2'>
+        <GoogleMaps/>
+      </div>
+    
+    </div>
     </>
   );
 }
