@@ -1,7 +1,7 @@
 // app/api/save-user.js
 
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import prisma from '@./prisma';
 
 // Maneja la solicitud POST para guardar el usuario
 export async function POST(request) {
