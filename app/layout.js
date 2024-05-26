@@ -8,7 +8,7 @@ import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
 // Importación del componente de encabezado
 import Header from '@/app/components/Header'
 
-
+import IndexPage from "./indexPage/page";
 // Definición de las fuentes a utilizar
 const inter = Montserrat({ subsets: ["latin"] });
 
@@ -32,7 +32,9 @@ export default function RootLayout({ children }) {
           <Header />
           
           {/* Contenido principal de la página */}
-      
+          <SignedIn>
+          <IndexPage/>
+          </SignedIn>
           {children}
          
         </body>
