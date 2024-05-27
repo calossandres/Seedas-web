@@ -1,4 +1,4 @@
-// Importa los módulos necesarios
+/*// Importa los módulos necesarios
 const { requireSession } = require('@clerk/nextjs/api');
 const { PrismaClient } = require('@prisma/client');
 
@@ -51,4 +51,4 @@ const handler = async (req, res) => {
 };
 
 // Exporta el controlador
-module.exports = handler;
+module.exports = handler;*/
