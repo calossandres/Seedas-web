@@ -1,22 +1,20 @@
-"use client"
-import Image from 'next/image';
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import Image from 'next/image';
 
-function InputItem ({ type })  {
+function InputItem({ type }) {
   const [value, setValue] = useState(null);
   const [placeholder, setPlaceholder] = useState('Select a location');
 
-  useEffect(()=>{
-    type=='source'
-    ?setPlaceholder('pickup location')
-    :setPlaceholder('Dropoff Location')
+  useEffect(() => {
+    type === 'source'
+      ? setPlaceholder('Pickup Location')
+      : setPlaceholder('Dropoff Location');
+  }, [type]);
 
-  },[])
-
-  const getLatAndLng = (place, type) => {
+  const getLatAndLng = (place) => {
     console.log(place, type);
-    // Implement the logic to get latitude and longitude from the place object
+    // Implement logic to extract latitude and longitude from the place object
   };
 
   return (
@@ -27,20 +25,18 @@ function InputItem ({ type })  {
         apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
         selectProps={{
           value,
-          onChange: (place) => { getLatAndLng(place, type);
+          onChange: (place) => {
+            getLatAndLng(place, type);
             setValue(place);
-           
           },
-          placeholder: 'pickup location',
+          placeholder: placeholder,
           isClearable: true,
           className: 'w-full',
-          components: {
-            DropdownIndicator:false // Hide the dropdown indicator
-          },
+          components: { DropdownIndicator: false },
           styles: {
             control: (provided) => ({
               ...provided,
-              backgroundColor: '000ffff00',
+              backgroundColor: '#000ffff00',
               border: 'none',
               boxShadow: 'none',
             }),
