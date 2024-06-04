@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import InputItem from './InputItem';
 import { SourceContext } from '../../context/SourceContext';
 import { DestinationContext } from '../../context/DestinationContext';
-import GoogleMap from './GoogleMaps';
 import CarListOptions from './CarListOptions';
 
 function SearchSection() {

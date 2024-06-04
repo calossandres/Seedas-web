@@ -22,8 +22,9 @@ function CheckoutForm(amount) {
             const{error}=await stripe.confirmPayPalPayment({
                 clientSecret:secretKey,
                 elements,
-                confirmPayPalPayment,
+                confirmParams:{
                 return_url:"http://localhost:3000/"
+                }
             })
     }
   return (

@@ -3,11 +3,11 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation"
 import React from "react"
-import CheckoutForm from "../components/Home/CheckoutForm";
-
+import CheckoutForm from "./../../components/Home/CheckoutForm";
+ 
 function Payment(){
     const searchParam=useSearchParams();
-    const amount=searchParam.get('amount')
+    const amount=searchParam.get('amount');
     
     const stripePromise=loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHER_KEY);
     const options={

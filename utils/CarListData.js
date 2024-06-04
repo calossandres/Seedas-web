@@ -10,7 +10,7 @@ export const CarListData=[
     },
     {
         id:2,
-        name:'carro1',
+        name:'carro2',
         seat:4,
         desc:'prrrrrr rides',
         amount:1.1,
@@ -18,10 +18,10 @@ export const CarListData=[
     },
     {
         id:3,
-        name:'carro1',
+        name:'carro3',
         seat:4,
         desc:'zzzzzzzzzzzzzzzz rides',
         amount:1.1,
         image:'/LOGO-SEEDAS.jpg'
     }
-] 
+] ;
