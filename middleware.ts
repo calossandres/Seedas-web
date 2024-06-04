@@ -3,6 +3,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 // Definir las rutas protegidas
 const isProtectedRoute = createRouteMatcher([
   '/indexPage(.*)',
+  '/trasportaPage(.*)',
   
 ]);
 

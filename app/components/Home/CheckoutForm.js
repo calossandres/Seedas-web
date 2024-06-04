@@ -19,7 +19,7 @@ function CheckoutForm(amount) {
             const secretKey=await res.json();
             console.log(secretKey);
             
-            const{error}=await stripe.confirmPayPalPayment({
+            const{error}=await stripe.confirmPayment({
                 clientSecret:secretKey,
                 elements,
                 confirmParams:{
