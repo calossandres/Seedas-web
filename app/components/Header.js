@@ -17,6 +17,12 @@ function Header() {
             id: 2,
             name: 'usuario',
             icon: '/logo-usuario.jpg',
+            link: '/indexPage' 
+          },
+          {
+            id: 3,
+            name: 'publicaciones',
+            icon: '/logo-usuario.jpg',
             link: '/usuario' 
           }
     ];
@@ -34,7 +40,7 @@ function Header() {
     return (
         <div className='p-5 pb-3 pl-10 border-b-[2px] border-gray-200 flex items-center justify-between' style={{ backgroundColor: '#212626' }}>
             <div className='flex gap-24 items-center'>
-                <a href="/indexPage">
+                <a href="indexPage">
                     <Image 
                         src='/LOGO-SEEDAS.jpg'
                         width={70}
@@ -48,7 +54,7 @@ function Header() {
                         // Botón para cada elemento del menú
                         <button 
                             key={item.id} 
-                            className='flex gap-2 items-center bg-gray-900 text-white px-4 py-2 rounded-md cursor-pointer'
+                            className='flex gap-2 items-center bg-212626-900 text-white px-4 py-2 rounded-md cursor-pointer'
                             onClick={() => router.push(item.link)}  // Navega a la ruta especificada en 'link'
                         >
                             <Image
