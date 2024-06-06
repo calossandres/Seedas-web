@@ -5,26 +5,25 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 
 function Header() {
-    // Menú del encabezado con íconos y enlaces
     const headerMenu = [
-        {
-            id: 1,
-            name: 'transporta',
-            icon: '/logo-carro.jpg',
-            link: '/trasportaPage'  
-          },
         {
             id: 2,
             name: 'usuario',
             icon: '/logo-usuario.jpg',
             link: '/indexPage' 
-          },
-          {
+        },
+        {
+            id: 1,
+            name: 'transporta',
+            icon: '/logo-carro.jpg',
+            link: '/trasportaPage'  
+        },
+        {
             id: 3,
-            name: 'publicaciones',
+            name: 'zona de trabajo',
             icon: '/logo-usuario.jpg',
-            link: '/usuario' 
-          }
+            link: '/trabajos' 
+        }
     ];
 
     const router = useRouter();
@@ -37,10 +36,18 @@ function Header() {
         }
     }, [isSignedIn, router]);
 
+    const handleUserClick = () => {
+        if (isSignedIn) {
+            router.push('/indexPage');
+        } else {
+            router.push('/sign-in');
+        }
+    };
+
     return (
         <div className='p-5 pb-3 pl-10 border-b-[2px] border-gray-200 flex items-center justify-between' style={{ backgroundColor: '#212626' }}>
             <div className='flex gap-24 items-center'>
-                <a href="indexPage">
+                <a href="/page">
                     <Image 
                         src='/LOGO-SEEDAS.jpg'
                         width={70}
@@ -51,11 +58,10 @@ function Header() {
                 </a>
                 <div className='flex gap-6 items-center'>
                     {headerMenu.map((item) => (
-                        // Botón para cada elemento del menú
                         <button 
                             key={item.id} 
                             className='flex gap-2 items-center bg-212626-900 text-white px-4 py-2 rounded-md cursor-pointer'
-                            onClick={() => router.push(item.link)}  // Navega a la ruta especificada en 'link'
+                            onClick={() => item.name === 'usuario' ? handleUserClick() : router.push(item.link)}
                         >
                             <Image
                                 src={item.icon}
@@ -78,10 +84,9 @@ function Header() {
             </div>
             <div className="mr-4">
                 <UserButton />  
-                      </div>
+            </div>
         </div>
     );
 }
 
 export default Header;
-

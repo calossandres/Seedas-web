@@ -57,7 +57,7 @@ const VehicleForm = () => {
           className="w-full p-2 mt-2 mb-4 rounded"
         />
       </div>
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Enviar</button>
+      <button type="submit" className="bg-black text-white px-4 py-2 rounded">Enviar</button>
     </form>
   );
 };

@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React, { useState } from 'react';
 import { GoogleMap, LoadScript, Circle } from '@react-google-maps/api';
 
