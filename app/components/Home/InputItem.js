@@ -1,11 +1,15 @@
-'use client'
-import React, { useState, useEffect } from 'react';
+'use client';
+import React, { useState, useEffect, useContext } from 'react';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import Image from 'next/image';
+import { DestinationContext } from '../../context/DestinationContext';
+import { SourceContext } from '../../context/SourceContext';
 
 function InputItem({ type }) {
   const [value, setValue] = useState(null);
-  const [placeholder, setPlaceholder] = useState('Select a location');
+  const [placeholder, setPlaceholder] = useState(null);
+  const { source, setSource } = useContext(SourceContext);
+  const { destination, setDestination } = useContext(DestinationContext);
 
   useEffect(() => {
     type === 'source'
@@ -13,9 +17,29 @@ function InputItem({ type }) {
       : setPlaceholder('Dropoff Location');
   }, [type]);
 
-  const getLatAndLng = (place) => {
-    console.log(place, type);
-    // Implement logic to extract latitude and longitude from the place object
+  const getLatAndLng = (place, type) => {
+    const placeId = place.value.place_id;
+    const service = new google.maps.places.PlacesService(document.createElement('div'));
+    service.getDetails({ placeId }, (place, status) => {
+      if (status === 'OK' && place.geometry.location) {
+        console.log(place.geometry.location.lng());
+        if (type === 'source') {
+          setSource({
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+            name: place.formatted_address,
+            label: place.name
+          });
+        } else {
+          setDestination({
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng(),
+            name: place.formatted_address,
+            label: place.name
+          });
+        }
+      }
+    });
   };
 
   return (
@@ -46,6 +70,6 @@ function InputItem({ type }) {
       />
     </div>
   );
-};
+}
 
 export default InputItem;

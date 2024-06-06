@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useContext } from 'react';
 import InputItem from './InputItem';
 import { SourceContext } from '../../context/SourceContext';
@@ -10,15 +11,19 @@ function SearchSection() {
   const [distance, setDistance] = useState(null);
 
   useEffect(() => {
-    if (source) {
+    if (source) 
+      {
       console.log(source);
     }
-    if (destination) {
-      console.log("--", destination);
-    }
+    if (destination) 
+      {
+console.log("--",destination)
+      }
+      },  [source, destination])
+    
     // Calculate distance here if needed
     // setDistance(value); // Update distance value if necessary
-  }, [source, destination]);
+ 
 
   return (
     <div>
