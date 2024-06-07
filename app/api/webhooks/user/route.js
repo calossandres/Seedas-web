@@ -5,7 +5,7 @@ import prisma from '../../../lib/db';
 
 const webhookSecret = process.env.WEBHOOK_SECRET;
 
-export async function POST(request) {
+export async function handler(request) {
   const payload = await request.json();
   const headerList = headers();
   const heads = {
@@ -51,12 +51,6 @@ export async function POST(request) {
   return NextResponse.json({ received: true });
 }
 
-export async function GET() {
-  // Define your GET handler if necessary
-  return NextResponse.json({ message: 'GET request received' });
-}
-
-export async function PUT(request) {
-  // Define your PUT handler if necessary
-  return NextResponse.json({ message: 'PUT request received' });
-}
+export const POST = handler;
+export const GET = handler;
+export const PUT = handler;
