@@ -25,8 +25,7 @@ export default function indexPage() {
           <div className="col-span-2">
             <GoogleMaps />
           </div>
-          
-               </div>
+        </div>
         </LoadScript>
       </DestinationContext.Provider>
     </SourceContext.Provider>
