@@ -51,7 +51,12 @@ export async function handler(request) {
   return NextResponse.json({ received: true });
 }
 
-export const POST = handler;
-export const GET = handler;
-export const PUT = handler;
-*/
+export async function GET() {
+  // Define your GET handler if necessary
+  return NextResponse.json({ message: 'GET request received' });
+}
+
+export async function PUT(request) {
+  // Define your PUT handler if necessary
+  return NextResponse.json({ message: 'PUT request received' });
+}
