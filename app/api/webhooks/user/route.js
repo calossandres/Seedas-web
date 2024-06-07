@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+/*import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 import prisma from '../../../lib/db';
@@ -54,3 +54,4 @@ export async function handler(request) {
 export const POST = handler;
 export const GET = handler;
 export const PUT = handler;
+*/
