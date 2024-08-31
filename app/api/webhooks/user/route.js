@@ -28,7 +28,7 @@ export async function handler(request) {
 
   if (eventType === 'user.created') {
     const userData = evt.data;
-    const { id, email_addresses, first_name, last_name, image_url, primary_email_address_id } = userData;
+    const { id, email_addresses, full_name, image_url, primary_email_address_id } = userData;
 
     const email = email_addresses.find(email => email.id === primary_email_address_id).email_address;
 
@@ -36,8 +36,7 @@ export async function handler(request) {
       await prisma.user.create({
         data: {
           externalId: id,
-          firstName: first_name,
-          lastName: last_name,
+          fullName: full_name,
           email: email,
           imageUrl: image_url,
         },
