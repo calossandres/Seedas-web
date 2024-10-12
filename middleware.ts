@@ -1,22 +1,28 @@
-import { DEFAULT_IGNORED_ROUTES } from '@clerk/nextjs/dist/types/server/authMiddleware';
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import Header from './app/components/Header';
 
+// Definir las rutas protegidas
 const isProtectedRoute = createRouteMatcher([
   '/indexPage(.*)',
-  '/about(.*)',
-  DEFAULT_IGNORED_ROUTES[ 'Header']
+  '/trasportaPage(.*)',
+  '/trabajo(.*)',
 ]);
 
+// Middleware de Clerk
 export default clerkMiddleware((auth, req) => {
   if (!auth().userId && isProtectedRoute(req)) {
-
-    // Add custom logic to run before redirecting
-
+    // Lógica personalizada antes de redirigir
     return auth().redirectToSignIn();
   }
 });
 
-export const config = { matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)']};
-
-
+// Configuración del matcher para proteger ciertas rutas y permitir que las rutas de webhook sean públicas
+export const config = {
+  matcher: [
+    // Proteger todas las rutas excepto archivos estáticos y directorio _next
+    '/((?!.*\\..*|_next).*)',
+    '/',
+    '/(api|trpc)(.*)',
+    // Especificar que la ruta de webhook sea pública
+    '/api/webhooks/user/:path*'
+  ],
+};

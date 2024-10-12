@@ -1,5 +1,5 @@
 // Este es tu archivo de esquema Prisma,
-// aprende mas al respecto en la documentacion: https://pris.ly/d/prisma-schema
+// aprende más al respecto en la documentación: https://pris.ly/d/prisma-schema
 
 // Generador para el cliente Prisma
 generator client {
@@ -12,15 +12,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo para el User
 model User {
-  id        Int      @id @default(autoincrement())
-  clerkId   String?   @unique
-  fullName  String
+  id        String   @id @default(uuid())
   email     String   @unique
+  fullName String?
+  imageUrl  String?
+  externalId String @unique
+  clerkId   String?  // Agregamos el campo clerkId
+  posts     Post[]   @relation("UserPosts")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], name: "UserPosts")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Modelo para el Productor
 model Productor {
   id        Int      @id @default(autoincrement())
@@ -28,9 +43,8 @@ model Productor {
   email     String   @unique
   telefono  String?
  
-  // Otros campos especficos del Productor
-
-  // o con los Pedidos
+  // Otros campos específicos del Productor
+  // Relación con los Pedidos
   pedidos   Pedido[]
 }
 
@@ -41,9 +55,8 @@ model Transportador {
   email     String   @unique
   telefono  String?
   
-  // Otros campos especficos del Transportador
-
-  // o con los Pedidos
+  // Otros campos específicos del Transportador
+  // Relación con los Pedidos
   pedidos   Pedido[]
 }
 
@@ -51,13 +64,11 @@ model Transportador {
 model Pedido {
   id               Int      @id @default(autoincrement())
   fechaCreacion    DateTime @default(now())
-  // Otros campos especifico del Pedido
-
-  // o con el Productor
+  // Otros campos específicos del Pedido
+  // Relación con el Productor
   productor        Productor @relation(fields: [productorId], references: [id])
   productorId      Int
-
-  // Relacion con el Transportador
+  // Relación con el Transportador
   transportador    Transportador @relation(fields: [transportadorId], references: [id])
   transportadorId  Int
 }

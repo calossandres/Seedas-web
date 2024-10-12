@@ -1,18 +1,27 @@
+"use client";
 
+import React, { useState } from 'react';
+import SearchSection from '../components/Home/SearchSection';
+import { SourceContext } from '../context/SourceContext';
+import { DestinationContext } from '../context/DestinationContext';
+import MapboxMap from '../components/Home/MapboxMap';
 
-// Componente IndexPage
-export default function IndexPage() {
-  return (
-    <>
-      {/* Componente SignedIn para mostrar contenido solo a usuarios autenticados */}
-     
-        {/* Contenido solo visible para usuarios autenticados */}
+export default function indexPage() {
+    const [source, setSource] = useState([]);
+    const [destination, setDestination] = useState([]);
 
-        <div>Bienvenido a la página de inicio</div>
-        
-     
-      {/* Contenido adicional de la página */}
-      <div>inicie sesión para ver el contenido de la pagina ...</div>
-    </>
-  );
+    return (
+        <SourceContext.Provider value={{ source, setSource }}>
+            <DestinationContext.Provider value={{ destination, setDestination }}>
+                <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <SearchSection />
+                    </div>
+                    <div className="col-span-2">
+                        <MapboxMap /> 
+                    </div>
+                </div>
+            </DestinationContext.Provider>
+        </SourceContext.Provider>
+    );
 }
