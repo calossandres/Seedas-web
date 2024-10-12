@@ -1,73 +1,59 @@
-'use client';
 import React, { useState, useEffect, useContext } from 'react';
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+import mapboxgl from 'mapbox-gl'; 
 import Image from 'next/image';
-import { DestinationContext } from '../../context/DestinationContext';
 import { SourceContext } from '../../context/SourceContext';
+import { DestinationContext } from '../../context/DestinationContext';
 
 function InputItem({ type }) {
-  const [value, setValue] = useState(null);
-  const [placeholder, setPlaceholder] = useState(null);
-  const { source, setSource } = useContext(SourceContext);
-  const { destination, setDestination } = useContext(DestinationContext);
+  const [placeholder, setPlaceholder] = useState('');
+  const { setSource } = useContext(SourceContext);
+  const { setDestination } = useContext(DestinationContext);
 
   useEffect(() => {
-    type === 'source'
-      ? setPlaceholder('Pickup Location')
-      : setPlaceholder('Dropoff Location');
+    setPlaceholder(type === 'source' ? 'Enter source location' : 'Enter destination location');
   }, [type]);
 
-  const getLatAndLng = (place, type) => {
-    const placeId = place.value.place_id;
-    const service = new google.maps.places.PlacesService(document.createElement('div'));
-    service.getDetails({ placeId }, (place, status) => {
-      if (status === 'OK' && place.geometry.location) {
-        console.log(place.geometry.location.lng());
+  useEffect(() => {
+    const geocoder = new MapboxGeocoder({
+      accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+      placeholder: placeholder,
+      types: 'place, address',
+      countries: 'us, co',
+     
+    });
+
+    geocoder.addTo(`#geocoder-${type}`);
+
+    const onResult = (event) => {
+      const { result } = event;
+      if (result && result.geometry && result.geometry.coordinates) {
+        const [lng, lat] = result.geometry.coordinates;
         if (type === 'source') {
           setSource({
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng(),
-            name: place.formatted_address,
-            label: place.name
+            lat,
+            lng,
+            name: result.place_name,
           });
         } else {
           setDestination({
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng(),
-            name: place.formatted_address,
-            label: place.name
+            lat,
+            lng,
+            name: result.place_name,
           });
         }
       }
-    });
-  };
+    };
+
+    geocoder.on('result', onResult);
+    return () => geocoder.off('result', onResult);
+  }, [type, placeholder, setSource, setDestination]);
 
   return (
     <div className="bg-slate-200 p-3 rounded-lg mt-3 flex items-center gap-4">
-      <Image src={type === 'source' ? '/source.png' : '/source.png'} width={15} height={15} />
-
-      <GooglePlacesAutocomplete
-        apiKey={process.env.NEXT_PUBLIC_GOOGLE_API_KEY}
-        selectProps={{
-          value,
-          onChange: (place) => {
-            getLatAndLng(place, type);
-            setValue(place);
-          },
-          placeholder: placeholder,
-          isClearable: true,
-          className: 'w-full',
-          components: { DropdownIndicator: false },
-          styles: {
-            control: (provided) => ({
-              ...provided,
-              backgroundColor: '#000ffff00',
-              border: 'none',
-              boxShadow: 'none',
-            }),
-          },
-        }}
-      />
+      <Image src={type === 'source' ? '/source.png' : '/source.png'} width={15} height={15} alt="Location Icon" />
+      <div id={`geocoder-${type}`} className="w-full" />
     </div>
   );
 }
