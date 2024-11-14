@@ -9,6 +9,7 @@ import MapboxMap from '../components/Home/MapboxMap';
 export default function indexPage() {
     const [source, setSource] = useState([]);
     const [destination, setDestination] = useState([]);
+    console.log("Public Key de Mercado Pago:", process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY);
 
     return (
         <SourceContext.Provider value={{ source, setSource }}>
