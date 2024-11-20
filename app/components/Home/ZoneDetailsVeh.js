@@ -15,6 +15,7 @@ const ZoneDetailsVeh = ({ publicacion }) => {
       <p><strong>Asientos disponibles:</strong> {publicacion.seats}</p> {/* Asientos */}
       <p><strong>Fecha:</strong> {publicacion.workingHours.date}</p> {/* Fecha */}
       <p><strong>Horario:</strong> {publicacion.workingHours.start} - {publicacion.workingHours.end}</p> {/* Horario */}
+     
     </div>
   );
 };
