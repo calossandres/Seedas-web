@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import ZoneDetails from '../components/Home/ZoneDetails';
-import ZoneList from '../components/Home/ZoneList';
+import ZoneList from '../components/Home/ZoneContainVeh';
 import { SourceContext } from '../context/SourceContext';
 import { DestinationContext } from '../context/DestinationContext';
 import ZoneMap from '../components/Home/ZoneMap';

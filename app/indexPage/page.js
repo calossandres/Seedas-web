@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState } from 'react';
 import SearchSection from '../components/Home/SearchSection';
 import { SourceContext } from '../context/SourceContext';

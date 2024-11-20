@@ -6,6 +6,7 @@ import { VehSourceContext } from '../context/VehSourceContext';
 import { VehRadiusContext } from '../context/VehRadiusContext';
 import VehInputItem from '../components/Home/VehInputItem';
 import VehMapbox from '../components/Home/VehMapbox';
+import VehSearchSection from '../components/Home/VehSearchSection';
 
 export default function TransportPage() {
   const [source, setSource] = useState(null);
@@ -14,14 +15,14 @@ export default function TransportPage() {
   return (
     <VehSourceContext.Provider value={{ source, setSource }}>
       <VehRadiusContext.Provider value={{ radius, setRadius }}>
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <VehInputItem type="source" />  {/* Input for address */}
-          </div>
-          <div>
-            <VehMapbox />  {/* Map that displays the selected address */}
-          </div>
-        </div>
+      <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <VehSearchSection />
+                    </div>
+                    <div className="col-span-2">
+                        <VehMapbox radius ={radius}/> 
+                    </div>
+                </div>
       </VehRadiusContext.Provider>
     </VehSourceContext.Provider>
   );

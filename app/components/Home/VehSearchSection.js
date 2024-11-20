@@ -1,75 +1,91 @@
-'use client';  // Indica que este es un componente del lado del cliente
+'use client';
 
 import React, { useState, useContext } from 'react';
-import { db, collection, addDoc } from '../../firebase/config';
+import { useRouter } from 'next/navigation'; // Importa useRouter
+import { saveTransportadoresToFirestore } from '../../firebase/firebaseVeh';
 import VehInputItem from './VehInputItem';
 import { VehSourceContext } from '../../context/VehSourceContext';
 import { VehRadiusContext } from '../../context/VehRadiusContext';
-import VehicleForm from './VehicleForm'; // Importa el formulario del vehículo
+import VehicleForm from './VehicleForm';
+import VehRadius from './VehRadius';
+import VehDate from './VehDate';
+import VehImage from './VehImage';
 
 function VehSearchSection() {
-  const { source } = useContext(VehSourceContext);
-  const { radius, setRadius } = useContext(VehRadiusContext);
-  const [vehicle, setVehicle] = useState('');
-  const [workingHours, setWorkingHours] = useState({ start: '', end: '' });
-  const [contact, setContact] = useState({ name: '', phone: '' });
-  const [passengers, setPassengers] = useState(1);
-  const [image, setImage] = useState(null);
+    const router = useRouter(); // Inicializa useRouter
+    const { source } = useContext(VehSourceContext);
+    const { radius } = useContext(VehRadiusContext);
+    const [vehicle, setVehicle] = useState('');
+    const [workingHours, setWorkingHours] = useState({ date: '', start: '', end: '' });
+    const [phone, setPhone] = useState('');
+    const [seats, setSeats] = useState('');
+    const [images, setImages] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async () => {
+        if (!source || !vehicle || !workingHours.start || !workingHours.end || !radius || !phone || !seats || images.length === 0) {
+            alert('Por favor, completa todos los campos.');
+            return;
+        }
 
-    if (!source.lat || !source.lng) {
-      alert('Por favor selecciona una dirección.');
-      return;
-    }
+        const TransportadoresData = {
+            source,
+            vehicle,
+            radius: parseFloat(radius),
+            workingHours,
+            phone,
+            seats: parseInt(seats, 10),
+            images,
+        };
 
-    try {
-      await addDoc(collection(db, 'vehicles'), {
-        vehicle,
-        workingHours,
-        contact,
-        passengers,
-        radius,
-        image,
-        location: source,
-      });
-      alert('¡Datos enviados correctamente!');
-    } catch (error) {
-      console.error('Error al guardar los datos:', error);
-      alert('Ocurrió un error al enviar los datos.');
-    }
-  };
+        try {
+            await saveTransportadoresToFirestore(TransportadoresData);
+            alert('¡Publicación creada exitosamente!');
+            router.push('/zonaTrabajo'); // Redirige a la página "zonaTrabajo"
+        } catch (error) {
+            console.error('Error al guardar los datos:', error);
+            alert('Hubo un problema al guardar los datos. Por favor, inténtalo nuevamente.');
+        }
+    };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setImage(URL.createObjectURL(file));
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="bg-slate-200 p-6 rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Completa tu información</h2>
-
-      <VehicleForm
-        vehicle={vehicle}
-        setVehicle={setVehicle}
-        workingHours={workingHours}
-        setWorkingHours={setWorkingHours}
-        contact={contact}
-        setContact={setContact}
-        passengers={passengers}
-        setPassengers={setPassengers}
-        image={image}
-        setImage={setImage}
-        radius={radius}
-        setRadius={setRadius}
-      />
-
-      <button type="submit" className="bg-black text-white px-4 py-2 rounded">
-        Enviar
-      </button>
-    </form>
-  );
+    return (
+        <div>
+            <div className="p-4 border rounded-lg mb-8">
+                <h2 className="text-lg font-bold">Crear publicación de transporte</h2>
+                <VehInputItem type="En qué zona quieres buscar trabajo" />
+                <VehRadius />
+           
+              
+            
+              <div>
+                  <label className='block mb-2 font-semibold'>Teléfono:</label>
+                    <input
+                        type="number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="p-2 border rounded w-full"
+                        placeholder="Ingresa tu número de teléfono"
+                    />
+              </div>
+              <VehicleForm setVehicle={setVehicle} />
+                <div className="mt-4">
+                  <label className='block mb-2 font-semibold'>Asientos disponibles:</label>
+                    <input
+                          type="number"
+                          value={seats}
+                          onChange={(e) => setSeats(e.target.value)}
+                          className="p-2 border rounded w-full"
+                          placeholder="Ingresa el número de asientos disponibles"
+                    />
+                </div>
+         
+                <VehImage images={images} setImages={setImages} />
+                <VehDate setWorkingHours={setWorkingHours} />
+                <button onClick={handleSubmit} className="mt-3 bg-gray-900 text-white p-3 rounded">
+                    Publicar
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default VehSearchSection;
