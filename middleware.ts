@@ -5,6 +5,7 @@ const isProtectedRoute = createRouteMatcher([
   '/indexPage(.*)',
   '/trasportaPage(.*)',
   '/zonaTrabajo(.*)',
+  '/Payment(.*)',
 ]);
 
 // Middleware de Clerk
