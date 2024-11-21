@@ -4,6 +4,7 @@ import ZoneDetails from '../components/Home/ZoneDetails';
 import ZoneList from '../components/Home/ZoneContainVeh';  
 import ZoneSearch from '../components/Home/ZoneSearch';   
 import ZoneContain from '../components/Home/ZoneContain';  
+import ZoneContainVeh from '../components/Home/ZoneContainVeh';
 
 export default function ZonaTrabajo() {  
   return (  
@@ -13,7 +14,7 @@ export default function ZonaTrabajo() {
         <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">  
           <div className="container mx-auto p-4 bg-white rounded-lg shadow-md">  
             <h1 className="text-2xl font-bold mb-4">Publicaciones como Transportador</h1>  
-            <ZoneList />  
+            <ZoneContainVeh />  
           </div>  
           <div className="container mx-auto p-4 bg-white rounded-lg shadow-md md:ml-4"> {/* Added margin to the left */}  
             <h1 className="text-2xl font-bold mb-4">Publicaciones como Productor</h1>  
