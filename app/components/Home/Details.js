@@ -1,10 +1,6 @@
 import React from 'react';
-import { useAuth } from '@clerk/nextjs'; // Importa useAuth para obtener el correo de Clerk
 
 const Details = ({ publicacion }) => {
-  const { user } = useAuth(); // Obtener el usuario autenticado
-  const email = user ? user.primaryEmailAddress : ''; // Correo del usuario logueado
-
   if (!publicacion) {
     return null;
   }
@@ -28,11 +24,26 @@ const Details = ({ publicacion }) => {
       alert('El número de teléfono no está disponible.');
       return;
     }
-}
+    const whatsappURL = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, '_blank');
+  };
+
+  // Función para enviar por correo electrónico
+  const handleSendEmail = () => {
+    const email = publicacion.email || ''; // Correo del usuario que creó la publicación
+    if (!email) {
+      alert('El correo electrónico no está disponible.');
+      return;
+    }
+    const mailtoURL = `mailto:${email}?subject=Interés en la publicación&body=${encodeURIComponent(
+      message
+    )}`;
+    window.location.href = mailtoURL;
+  };
 
   return (
     <div className="p-4 border rounded-md shadow-md">
-      <h3 className="text-xl font-semibold">Detalles del Trabajo</h3>
+      <h3 className="text-lg font-semibold">Detalles del Trabajo</h3>
       <p><strong>Origen:</strong> {publicacion.source.name}</p>
       <p><strong>Destino:</strong> {publicacion.destination.name}</p>
       <p><strong>Teléfono:</strong> {publicacion.phone}</p>
@@ -42,7 +53,18 @@ const Details = ({ publicacion }) => {
       <p><strong>Horario:</strong> {publicacion.workingHours.start} - {publicacion.workingHours.end}</p>
       <p><strong>Peso:</strong> {publicacion.weight} kg</p>
       <div className="mt-4 flex gap-2">
-       
+        <button
+          onClick={handleSendWhatsApp}
+          className="bg-green-500 text-white px-2 py-1.5 rounded-md"
+        >
+          Enviar a WhatsApp
+        </button>
+        <button
+          onClick={handleSendEmail}
+          className="bg-blue-800 text-white px-2 py-1.5 rounded-md"
+        >
+          Enviar por Correo
+        </button>
       </div>
     </div>
   );

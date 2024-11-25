@@ -5,6 +5,7 @@ import { DestinationContext } from '../../context/DestinationContext';
 import { useRouter } from 'next/navigation';
 import CarListOptions from './CarListOptions';
 import DateSelector from './DateSelector';
+
 import { saveProductoresToFirestore } from '../../firebase/firebaseUtils';
 import { useAuth } from '@clerk/nextjs'; // Importa el hook de Clerk para obtener la info del usuario
 
@@ -129,6 +130,8 @@ function SearchSection() {
           </div>
         )}
       </div>
+      {/* Contenedor del componente Contain */}
+    
     </div>
   );
 }
