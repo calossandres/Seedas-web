@@ -130,8 +130,6 @@ function SearchSection() {
           </div>
         )}
       </div>
-      {/* Contenedor del componente Contain */}
-    
     </div>
   );
 }

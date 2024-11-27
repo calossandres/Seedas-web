@@ -8,7 +8,9 @@ const Contain = () => {
   const [publicaciones, setPublicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth(); // Obtener usuario autenticado
-  const email = user ? user.primaryEmailAddress : ''; // Correo del usuario autenticado
+
+  // Asegurar que el correo está disponible
+  const email = user?.primaryEmailAddress?.emailAddress || ''; 
 
   useEffect(() => {
     const fetchPublicaciones = async () => {
@@ -19,7 +21,7 @@ const Contain = () => {
             id: doc.id,
             ...doc.data(),
           }))
-          .filter((pub) => pub.email === email); // Filtrar por correo del usuario autenticado
+          .filter((pub) => pub.email === email); // Filtrar publicaciones del usuario
         setPublicaciones(publicacionesData);
       } catch (error) {
         console.error('Error al obtener los datos de Firebase:', error);
@@ -63,7 +65,7 @@ const Contain = () => {
             <Details publicacion={publicacion} />
             <button
               onClick={() => handleDelete(publicacion.id)}
-              className="mt-2 bg-red-500 text-white px-3 py-1 rounded"
+              className="mt-2 bg-red-500 text-white p-2 rounded"
             >
               Eliminar
             </button>
