@@ -17,13 +17,13 @@ const DateSelector = ({ setWorkingHours }) => {
 
   return (  
     <div className="mt-4">  
-      <h3>Seleccionar Fecha y Horario</h3>  
-      <div>  
-        <label>Fecha:</label>  
+       <div>  
+        <label>Fecha en la que necesitas el transporte:</label>  
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />  
       </div>  
+      <h3>hora en la que el transportador lo pueda contactar</h3>
       <div>  
-        <label>Hora de inicio:</label>  
+        <label>Hora de inicio :</label>  
         <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />  
       </div>  
       <div>  

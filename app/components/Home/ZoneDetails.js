@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { useAuth } from '@clerk/nextjs'; // Importa useAuth para obtener el correo de Clerk
 
@@ -9,6 +10,9 @@ const ZoneDetails = ({ publicacion }) => {
     return null;
   }
 
+  // Verifica si `merchandise` está definido antes de acceder a sus propiedades
+  const merchandise = publicacion.merchandise || { type: 'No especificado', description: 'No disponible' };
+
   // Construir mensaje para WhatsApp o correo
   const message = ` 
     Hola, me interesa esta publicación:
@@ -19,6 +23,7 @@ const ZoneDetails = ({ publicacion }) => {
     - Fecha: ${publicacion.workingHours.date}
     - Horario: ${publicacion.workingHours.start} - ${publicacion.workingHours.end}
     - Peso: ${publicacion.weight} kg
+    - Mercancía: ${merchandise.type} - ${merchandise.description}
   `;
 
   // Función para enviar a WhatsApp
@@ -50,9 +55,10 @@ const ZoneDetails = ({ publicacion }) => {
       <p><strong>Teléfono:</strong> {publicacion.phone}</p>
       <p><strong>Vehículo:</strong> {publicacion.vehicle}</p>
       <p><strong>Precio:</strong> ${parseFloat(publicacion.price).toLocaleString('es-CO')} COP</p>
-      <p><strong>Fecha:</strong> {publicacion.workingHours.date}</p>
-      <p><strong>Horario:</strong> {publicacion.workingHours.start} - {publicacion.workingHours.end}</p>
+      <p><strong>Fecha del trabajo:</strong> {publicacion.workingHours.date}</p>
+      <p><strong>Horario para contactar:</strong> {publicacion.workingHours.start} - {publicacion.workingHours.end}</p>
       <p><strong>Peso:</strong> {publicacion.weight} kg</p>
+      <p><strong>Mercancía:</strong> {merchandise.type} - {merchandise.description}</p>
       <div className="mt-4 flex gap-2">
         <button
           onClick={handleSendWhatsApp}

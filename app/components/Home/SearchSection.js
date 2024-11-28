@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useEffect, useState } from "react";
 import InputItem from "./InputItem";
 import { SourceContext } from "../../context/SourceContext";
@@ -8,11 +9,20 @@ import DateSelector from "./DateSelector";
 import Merchandise from "./Merchandise";
 import { saveProductoresToFirestore, getUserPublications } from "../../firebase/firebaseUtils";
 import { UserIdContext } from "../../context/UserIdContext";
+import InputPhone from "./InputPhone";
+import InputWeight from "./InputWeight"; // Importamos el nuevo componente
+
+// Función para calcular el precio
+const calculatePrice = (distance, weight, carRate) => {
+  const baseRate = distance > 300 ? 2500 : 2000; // Tarifa base en pesos por km
+  const weightFactor = Math.ceil(weight / 200); // El factor de peso depende de cada 200 kg.
+  return (carRate * distance * (baseRate / 1000) * weightFactor).toFixed(2);
+};
 
 function SearchSection() {
   const { source } = useContext(SourceContext);
   const { destination } = useContext(DestinationContext);
-  const { userId } = useContext(UserIdContext); // Obtiene el userId desde el contexto
+  const { userId } = useContext(UserIdContext);
   const [price, setPrice] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
   const [workingHours, setWorkingHours] = useState({ date: "", start: "", end: "" });
@@ -35,15 +45,12 @@ function SearchSection() {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const dist = R * c;
 
-      const baseRate = dist > 300 ? 2500 : 2000;
-      const weightFactor = weight > 500 ? 1.5 : 1.0;
-      const calculatedPrice = (
-        selectedCar.amount * dist * (baseRate / 1000) * weightFactor
-      ).toFixed(2);
-
+      const calculatedPrice = calculatePrice(dist, weight, selectedCar.amount); // Usa el valor de la tarifa del vehículo
       setPrice(calculatedPrice);
+    } else {
+      setPrice(null);
     }
-  }, [source, destination, selectedCar, weight]);
+  }, [source, destination, selectedCar, weight]); // Monitorea los cambios de peso y otros parámetros.
 
   const handlePayment = async (paymentMethod) => {
     if (!source || !destination || !selectedCar || !workingHours.date || weight <= 0 || !phone || !merchandiseData.type) {
@@ -52,7 +59,7 @@ function SearchSection() {
     }
 
     const ProductoresData = {
-      userId, // Incluye el userId de Clerk
+      userId,
       source,
       destination,
       vehicle: selectedCar.name,
@@ -102,31 +109,10 @@ function SearchSection() {
         <p className="text-[20px] font-bold">Ingresa tus ubicaciones</p>
         <InputItem type="source" />
         <InputItem type="destination" />
-        <div>
-          <label className="block mb-2 font-semibold">Teléfono:</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="p-2 border rounded w-full"
-            placeholder="Ingresa tu número de teléfono"
-          />
-        </div>
-        <div className="my-4">
-          <label htmlFor="weight" className="block font-medium">
-            Peso de la carga (kg):
-          </label>
-          <input
-            type="number"
-            id="weight"
-            value={weight}
-            onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
-            className="w-full border p-2 rounded"
-            placeholder="Ingresa el peso de la carga"
-          />
-        </div>
+        <InputPhone phone={phone} setPhone={setPhone} />
+        <InputWeight weight={weight} setWeight={setWeight} />
         <Merchandise setMerchandiseData={setMerchandiseData} />
-        <CarListOptions distance={price ? parseFloat(price) : 0} setSelectedCar={setSelectedCar} />
+        <CarListOptions distance={price ? parseFloat(price) : 0} weight={weight} setSelectedCar={setSelectedCar} />
         <DateSelector setWorkingHours={setWorkingHours} />
         {price && (
           <div>
@@ -151,3 +137,4 @@ function SearchSection() {
 }
 
 export default SearchSection;
+

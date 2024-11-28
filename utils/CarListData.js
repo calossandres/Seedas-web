@@ -5,7 +5,7 @@ export const CarListData=[
         name:'moto',
         seat:0,
         desc:'22 rides',
-        amount:1000,
+        amount:3000,
         image:'/LOGO-SEEDAS.jpg',
         alt:'carro imagen'
     },
@@ -14,7 +14,7 @@ export const CarListData=[
         name:'carro',
         seat:2,
         desc:'44 rides',
-        amount:4000,
+        amount:7000,
         image:'/LOGO-SEEDAS.jpg',
         alt:'carro imagen2'
     },
@@ -23,7 +23,7 @@ export const CarListData=[
         name:'camioneta',
         seat:1,
         desc:'1 rides',
-        amount:8000,
+        amount:12000,
         image:'/LOGO-SEEDAS.jpg',
         alt:'carro imagen3'
     }

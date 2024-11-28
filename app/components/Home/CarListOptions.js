@@ -2,7 +2,7 @@ import { CarListData } from '../../../utils/CarListData';
 import React, { useState } from 'react';
 import CarListItem from './CarListItem';
 
-function CarListOptions({ distance, setSelectedCar }) {
+function CarListOptions({ distance, weight, setSelectedCar }) {  // Recibe weight como prop
   const [activeIndex, setActiveIndex] = useState();
 
   return (
@@ -17,7 +17,7 @@ function CarListOptions({ distance, setSelectedCar }) {
             setSelectedCar(item);  // Envía el carro seleccionado a SearchSection
           }}
         >
-          <CarListItem car={item} distance={distance} />
+          <CarListItem car={item} distance={distance} weight={weight} />  {/* Pasa weight aquí */}
         </div>
       ))}
     </div>
