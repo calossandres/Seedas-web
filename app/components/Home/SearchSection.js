@@ -1,30 +1,27 @@
-import React, { useContext, useEffect, useState } from 'react';
-import InputItem from './InputItem';
-import { SourceContext } from '../../context/SourceContext';
-import { DestinationContext } from '../../context/DestinationContext';
-import { useRouter } from 'next/navigation';
-import CarListOptions from './CarListOptions';
-import DateSelector from './DateSelector';
-import Merchandise from './Merchandise'; // Importa el componente Merchandise
-import { saveProductoresToFirestore, getUserPublications } from '../../firebase/firebaseUtils';
-import { useAuth } from '@clerk/nextjs';
+import React, { useContext, useEffect, useState } from "react";
+import InputItem from "./InputItem";
+import { SourceContext } from "../../context/SourceContext";
+import { DestinationContext } from "../../context/DestinationContext";
+import { useRouter } from "next/navigation";
+import CarListOptions from "./CarListOptions";
+import DateSelector from "./DateSelector";
+import Merchandise from "./Merchandise";
+import { saveProductoresToFirestore, getUserPublications } from "../../firebase/firebaseUtils";
+import { UserIdContext } from "../../context/UserIdContext";
 
 function SearchSection() {
   const { source } = useContext(SourceContext);
   const { destination } = useContext(DestinationContext);
+  const { userId } = useContext(UserIdContext); // Obtiene el userId desde el contexto
   const [price, setPrice] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
-  const [workingHours, setWorkingHours] = useState({ date: '', start: '', end: '' });
+  const [workingHours, setWorkingHours] = useState({ date: "", start: "", end: "" });
   const [weight, setWeight] = useState(0);
-  const [phone, setPhone] = useState('');
-  const [merchandiseData, setMerchandiseData] = useState({ type: '', description: '' });
+  const [phone, setPhone] = useState("");
+  const [merchandiseData, setMerchandiseData] = useState({ type: "", description: "" });
   const [userPublications, setUserPublications] = useState([]);
   const router = useRouter();
-  const { user } = useAuth(); // Obtiene la información del usuario autenticado
-  const email = user?.primaryEmailAddress || '';
-  const userId = user?.id || '';
 
-  // Cálculo del precio basado en la distancia, tipo de vehículo y peso
   useEffect(() => {
     if (source && destination && selectedCar && weight > 0) {
       const R = 6371; // Radio de la Tierra en km
@@ -48,15 +45,14 @@ function SearchSection() {
     }
   }, [source, destination, selectedCar, weight]);
 
-  // Manejo del pago y guardado de datos
   const handlePayment = async (paymentMethod) => {
     if (!source || !destination || !selectedCar || !workingHours.date || weight <= 0 || !phone || !merchandiseData.type) {
-      alert('Por favor, completa todos los campos antes de continuar.');
+      alert("Por favor, completa todos los campos antes de continuar.");
       return;
     }
 
     const ProductoresData = {
-      userId,
+      userId, // Incluye el userId de Clerk
       source,
       destination,
       vehicle: selectedCar.name,
@@ -70,32 +66,30 @@ function SearchSection() {
 
     try {
       await saveProductoresToFirestore(ProductoresData);
-
-      // Actualiza la lista de publicaciones del usuario
       fetchUserPublications();
 
-      if (paymentMethod === 'online') {
+      if (paymentMethod === "online") {
         router.push(`/payment?amount=${price}`);
       } else {
-        alert('Pago confirmado en efectivo. Gracias por usar nuestro servicio.');
-        router.push('/zonaTrabajo');
+        alert("Pago confirmado en efectivo. Gracias por usar nuestro servicio.");
+        router.push("/zonaTrabajo");
       }
     } catch (error) {
-      console.error('Error al guardar los datos:', error);
-      alert('Hubo un error al guardar la información. Por favor, inténtalo nuevamente.');
+      console.error("Error al guardar los datos:", error);
+      alert("Hubo un error al guardar la información. Por favor, inténtalo nuevamente.");
     }
   };
 
   const fetchUserPublications = async () => {
+    if (!userId) return;
     try {
       const publications = await getUserPublications(userId);
       setUserPublications(publications);
     } catch (error) {
-      console.error('Error al cargar las publicaciones:', error);
+      console.error("Error al cargar las publicaciones:", error);
     }
   };
 
-  // Cargar publicaciones del usuario autenticado al montar el componente
   useEffect(() => {
     if (userId) {
       fetchUserPublications();
@@ -138,13 +132,13 @@ function SearchSection() {
           <div>
             <p>Precio estimado: ${price} pesos</p>
             <button
-              onClick={() => handlePayment('online')}
+              onClick={() => handlePayment("online")}
               className="mt-3 bg-gray-900 text-white p-3 rounded mr-4"
             >
               Ir a Pago en línea
             </button>
             <button
-              onClick={() => handlePayment('cash')}
+              onClick={() => handlePayment("cash")}
               className="mt-3 bg-gray-900 text-white p-3 rounded"
             >
               Pagar en efectivo
@@ -152,8 +146,6 @@ function SearchSection() {
           </div>
         )}
       </div>
-
-
     </div>
   );
 }
