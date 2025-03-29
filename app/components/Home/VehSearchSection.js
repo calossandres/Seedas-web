@@ -8,29 +8,34 @@ import VehicleForm from './VehicleForm';
 import VehRadius from './VehRadius';
 import VehDate from './VehDate';
 import VehImage from './VehImage';
+import { useUser } from '@clerk/nextjs'; // Importar Clerk para obtener el userId
 
 function VehSearchSection() {
   const router = useRouter();
   const { source } = useContext(VehSourceContext);
   const { radius } = useContext(VehRadiusContext);
-  const [vehicle, setVehicle] = useState('');
+  const [vehicle, setVehicle] = useState({ name: '', tarifaBase: 0 });
   const [workingHours, setWorkingHours] = useState({ date: '', start: '', end: '' });
   const [phone, setPhone] = useState('');
   const [seats, setSeats] = useState('');
   const [images, setImages] = useState([]);
+  const { user } = useUser(); // Obtener el usuario autenticado
+  const userId = user?.id; // Obtener el userId
 
   const handleSubmit = async () => {
     // Validación de campos
-    if (!source || !vehicle || !workingHours.start || !workingHours.end || !radius || !phone || !seats  || !images ){
+    if (!source || !vehicle || !workingHours.start || !workingHours.end || !radius || !phone || !seats || !images || !userId) {
       alert('Por favor, completa todos los campos.');
       return;
     }
 
     const TransportadoresData = {
+      userId,
       source,
       radius: parseFloat(radius),
       phone,
-      vehicle,
+      vehicle: vehicle.name, // Asegurar que se envía solo el nombre del vehículo
+      tarifaBase: vehicle.tarifaBase, // Si deseas guardar la tarifa base
       seats: parseInt(seats, 10),
       images,
       workingHours,
@@ -65,7 +70,21 @@ function VehSearchSection() {
             placeholder="Ingresa tu número de teléfono"
           />
         </div>
+
+        {/* 🚗 Selección de vehículo */}
         <VehicleForm setVehicle={setVehicle} />
+
+        {/* 🚗 Vehículo seleccionado */}
+        <div className="mt-4">
+          <label className="block mb-2 font-semibold">Vehículo seleccionado:</label>
+          <input
+            type="text"
+            value={vehicle.name}
+            readOnly
+            className="p-2 border rounded w-full bg-gray-200"
+          />
+        </div>
+
         <div className="mt-4">
           <label className="block mb-2 font-semibold">Asientos disponibles:</label>
           <input

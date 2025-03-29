@@ -1,4 +1,3 @@
-"use client";
 import React, { useContext, useEffect, useState } from "react";
 import InputItem from "./InputItem";
 import { SourceContext } from "../../context/SourceContext";
@@ -6,21 +5,21 @@ import { DestinationContext } from "../../context/DestinationContext";
 import { UserIdContext } from "../../context/UserIdContext";
 import { useRouter } from "next/navigation";
 import { saveProductoresToFirestore } from "../../firebase/firebaseUtils";
-import CarListOptions from "./CarListOptions";
+import CarListOption from "./CarListOption";
 import DateSelector from "./DateSelector";
 import InputPhone from "./InputPhone";
 import InputWeight from "./InputWeight";
 
-const calculatePrice = (distance, weight, carRate) => {
+const calculatePrice = (distance, weight, tarifaBase) => {
   const baseRate = distance > 300 ? 2500 : 2000;
   const weightFactor = Math.ceil(weight / 200);
-  return (carRate * distance * (baseRate / 1000) * weightFactor).toFixed(2);
+  return (tarifaBase * distance * (baseRate / 1000) * weightFactor).toFixed(2);
 };
 
 function SearchSection() {
   const { source } = useContext(SourceContext);
   const { destination } = useContext(DestinationContext);
-  const userId = useContext(UserIdContext); // Ahora userId se obtiene correctamente
+  const userId = useContext(UserIdContext);
 
   const [price, setPrice] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
@@ -29,6 +28,12 @@ function SearchSection() {
   const [phone, setPhone] = useState("");
   const router = useRouter();
 
+  const calculatePrice = (distance, weight, tarifaBase) => {
+    const baseRate = distance > 300 ? 2500 : 2000; 
+    const weightFactor = Math.ceil(weight / 200);  
+    return (tarifaBase * distance * (baseRate / 1000) * weightFactor).toFixed(2);
+  };
+  
   useEffect(() => {
     if (source && destination && selectedCar && weight > 0) {
       const R = 6371;
@@ -41,14 +46,13 @@ function SearchSection() {
           Math.sin(dLng / 2) * Math.sin(dLng / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const dist = R * c;
-
-      const calculatedPrice = calculatePrice(dist, weight, selectedCar.amount);
+  
+      const calculatedPrice = calculatePrice(dist, weight, selectedCar.tarifaBase);
       setPrice(calculatedPrice);
     } else {
       setPrice(null);
     }
   }, [source, destination, selectedCar, weight]);
-
   const handlePayment = async (paymentMethod) => {
     if (!source || !destination || !selectedCar || !workingHours.date || weight <= 0 || !phone) {
       alert("Por favor, completa todos los campos antes de continuar.");
@@ -88,15 +92,24 @@ function SearchSection() {
       <InputItem type="destination" />
       <InputPhone phone={phone} setPhone={setPhone} />
       <InputWeight weight={weight} setWeight={setWeight} />
-      <CarListOptions setSelectedCar={setSelectedCar} />
+      <CarListOption setSelectedCar={setSelectedCar} />
       <DateSelector setWorkingHours={setWorkingHours} />
+      
+      {selectedCar && (
+        <div className="p-2 border rounded-md shadow-md bg-gray-100 mt-4">
+          <p className="text-lg font-semibold">Transportador seleccionado:</p>
+          <p><strong>Nombre:</strong> {selectedCar.name}</p>
+          <p><strong>Tarifa base:</strong> ${selectedCar.amount?.toLocaleString("es-CO")} COP</p>
+        </div>
+      )}
+
       {price && (
-        <div>
-          <p>Precio estimado: ${price} pesos</p>
-          <button onClick={() => handlePayment("online")} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+        <div className="mt-4">
+          <p className="text-lg font-bold">Precio estimado: ${price} pesos</p>
+          <button onClick={() => handlePayment("online")} className="bg-blue-500 text-white px-4 py-2 rounded-lg m-2">
             Pagar en línea
           </button>
-          <button onClick={() => handlePayment("cash")} className="bg-gray-500 text-white px-4 py-2 rounded-lg">
+          <button onClick={() => handlePayment("cash")} className="bg-gray-500 text-white px-4 py-2 rounded-lg m-2">
             Pagar en efectivo
           </button>
         </div>
