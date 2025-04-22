@@ -1,49 +1,39 @@
-// firebase/firebaseVeh.js
+import { doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from './config';
 
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc } from 'firebase/firestore';
-import { db, storage } from './config'; // Importamos la configuración y el almacenamiento
-
-// Función para subir imagen a Firebase Storage
-export const uploadImage = async (file) => {
-  const storageRef = ref(storage, `images/${file.name}-${Date.now()}`);
-
-  const uploadTask = uploadBytesResumable(storageRef, file);
-
-  return new Promise((resolve, reject) => {
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        // Progreso de la carga
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-      },
-      (error) => {
-        console.error('Error al subir la imagen:', error);
-        reject('Error al subir la imagen. Intenta de nuevo.');
-      },
-      () => {
-        // Al finalizar la carga, obtener la URL de la imagen
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((downloadURL) => {
-            resolve(downloadURL); // Devuelves la URL de la imagen
-          })
-          .catch((error) => {
-            reject('Error al obtener la URL de la imagen.');
-          });
-      }
-    );
-  });
-};
-
-// Función para guardar datos del transportador en Firestore
+// Función para guardar datos del transportador en Firestore con múltiples publicaciones por usuario
 export const saveTransportadoresToFirestore = async (data) => {
   try {
-    const docRef = doc(db, 'Transportadores', `${Date.now()}`);
-    await setDoc(docRef, data); // Guarda los datos en la colección 'Transportadores'
-    console.log('Reserva guardada correctamente');
+    if (!data?.userId) throw new Error("El userId es obligatorio");
+
+    const uniqueId = `${data.userId}_${crypto.randomUUID()}`; // ID único basado en el usuario
+    const docRef = doc(db, "Transportadores", uniqueId);
+
+    await setDoc(docRef, {
+      ...data,
+      id: uniqueId,
+      createdAt: new Date().toISOString(),
+    });
+
+    console.log("Transportador guardado correctamente.");
+    return uniqueId;
   } catch (error) {
-    console.error('Error al guardar la reserva:', error);
-    throw new Error('No se pudo guardar la reserva. Por favor, inténtalo nuevamente.');
+    console.error("Error al guardar el transportador:", error);
+    throw error;
+  }
+};
+
+// Función para obtener todas las publicaciones de un transportador por userId
+export const getUserTransporters = async (userId) => {
+  try {
+    if (!userId) throw new Error("El userId es obligatorio");
+
+    const q = query(collection(db, "Transportadores"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error al obtener transportadores:", error);
+    throw error;
   }
 };

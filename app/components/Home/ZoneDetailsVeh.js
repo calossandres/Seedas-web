@@ -12,8 +12,6 @@ const ZoneDetailsVeh = ({ publicacion }) => {
     - Vehículo: ${publicacion.vehicle}
     - Radio de búsqueda: ${publicacion.radius} km
     - Asientos disponibles: ${publicacion.seats}
-    - Fecha: ${publicacion.workingHours.date}
-    - Horario: ${publicacion.workingHours.start} - ${publicacion.workingHours.end}
     - Teléfono: ${publicacion.phone}
   `;
 
@@ -42,13 +40,13 @@ const ZoneDetailsVeh = ({ publicacion }) => {
   return (
     <div className="p-4 border rounded-md shadow-md">
       <h3 className="text-xl font-semibold">Detalles del Transporte</h3>
+      <p><strong>Nombre:</strong> {publicacion.userName || "No disponible"}</p>
       <p><strong>Origen:</strong> {publicacion.source.name}</p>
       <p><strong>Vehículo:</strong> {publicacion.vehicle}</p>
       <p><strong>Radio:</strong> {publicacion.radius} km</p>
       <p><strong>Teléfono:</strong> {publicacion.phone}</p>
       <p><strong>Asientos disponibles:</strong> {publicacion.seats}</p>
-      <p><strong>Fecha:</strong> {publicacion.workingHours.date}</p>
-      <p><strong>Horario:</strong> {publicacion.workingHours.start} - {publicacion.workingHours.end}</p>
+     
       <div className="mt-4">
         <h4 className="text-lg font-semibold">Imágenes del Vehículo:</h4>
         <div className="grid grid-cols-3 gap-2">

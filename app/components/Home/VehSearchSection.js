@@ -1,51 +1,49 @@
+'use client';
+
 import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveTransportadoresToFirestore } from '../../firebase/firebaseVeh';
-import VehInputItem from './VehInputItem';
+import VehInputSource from './VehInputSource';
+import VehInputDestination from './VehInputDestination';
 import { VehSourceContext } from '../../context/VehSourceContext';
-import { VehRadiusContext } from '../../context/VehRadiusContext';
+import { VehDestinationContext } from '../../context/VehDestinationContext';
 import VehicleForm from './VehicleForm';
-import VehRadius from './VehRadius';
-import VehDate from './VehDate';
 import VehImage from './VehImage';
-import { useUser } from '@clerk/nextjs'; // Importar Clerk para obtener el userId
+import { useUser } from '@clerk/nextjs';
 
 function VehSearchSection() {
   const router = useRouter();
   const { source } = useContext(VehSourceContext);
-  const { radius } = useContext(VehRadiusContext);
+  const { destination } = useContext(VehDestinationContext);
   const [vehicle, setVehicle] = useState({ name: '', tarifaBase: 0 });
-  const [workingHours, setWorkingHours] = useState({ date: '', start: '', end: '' });
   const [phone, setPhone] = useState('');
   const [seats, setSeats] = useState('');
   const [images, setImages] = useState([]);
-  const { user } = useUser(); // Obtener el usuario autenticado
-  const userId = user?.id; // Obtener el userId
+  const { user } = useUser();
+
+  const userId = user?.id;
+  const userName = user?.fullName;
 
   const handleSubmit = async () => {
-    // Validación de campos
-    if (!source || !vehicle || !workingHours.start || !workingHours.end || !radius || !phone || !seats || !images || !userId) {
+    if (!source || !destination || !vehicle || !phone || !seats || !images || !userId || !userName) {
       alert('Por favor, completa todos los campos.');
       return;
     }
 
     const TransportadoresData = {
       userId,
+      userName,
       source,
-      radius: parseFloat(radius),
+      destination,
       phone,
-      vehicle: vehicle.name, // Asegurar que se envía solo el nombre del vehículo
-      tarifaBase: vehicle.tarifaBase, // Si deseas guardar la tarifa base
+      vehicle: vehicle.name,
+      tarifaBase: vehicle.tarifaBase,
       seats: parseInt(seats, 10),
       images,
-      workingHours,
     };
 
     try {
-      // Guardar datos en Firestore
       await saveTransportadoresToFirestore(TransportadoresData);
-
-      // Redirigir a la página de zona de trabajo
       alert('¡Publicación creada exitosamente!');
       router.push('/zonaTrabajo');
     } catch (error) {
@@ -58,8 +56,9 @@ function VehSearchSection() {
     <div>
       <div className="p-4 border rounded-lg mb-8">
         <h2 className="text-lg font-bold">Crear publicación de transporte</h2>
-        <VehInputItem type="En qué zona quieres buscar trabajo" />
-        <VehRadius />
+        <VehInputSource type="source" />
+        <VehInputDestination type="destination" />
+        
         <div>
           <label className="block mb-2 font-semibold">Teléfono:</label>
           <input
@@ -71,10 +70,8 @@ function VehSearchSection() {
           />
         </div>
 
-        {/* 🚗 Selección de vehículo */}
         <VehicleForm setVehicle={setVehicle} />
 
-        {/* 🚗 Vehículo seleccionado */}
         <div className="mt-4">
           <label className="block mb-2 font-semibold">Vehículo seleccionado:</label>
           <input
@@ -96,11 +93,8 @@ function VehSearchSection() {
           />
         </div>
         <VehImage images={images} setImages={setImages} />
-        <VehDate setWorkingHours={setWorkingHours} />
-        <button
-          onClick={handleSubmit}
-          className="mt-3 bg-gray-900 text-white p-3 rounded"
-        >
+
+        <button onClick={handleSubmit} className="mt-3 bg-gray-900 text-white p-3 rounded">
           Publicar
         </button>
       </div>

@@ -50,6 +50,7 @@ const ZoneDetails = ({ publicacion }) => {
   return (
     <div className="p-4 border rounded-md shadow-md">
       <h3 className="text-xl font-semibold">Detalles del Trabajo</h3>
+      <p><strong>Nombre:</strong> {publicacion.userName || "No disponible"}</p>
       <p><strong>Origen:</strong> {publicacion.source.name}</p>
       <p><strong>Destino:</strong> {publicacion.destination.name}</p>
       <p><strong>Teléfono:</strong> {publicacion.phone}</p>

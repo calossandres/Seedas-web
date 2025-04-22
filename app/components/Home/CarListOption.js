@@ -1,53 +1,66 @@
-import React, { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase/config';
-import TransporterDetails from './TransporterDetails';
+"use client";
+import React, { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useUser } from "@clerk/nextjs";
+import { db } from "../../firebase/config";
+import TransporterDetails from "./TransporterDetails";
 
 const CarListOption = ({ setSelectedCar }) => {
+  const { user } = useUser();
   const [publicaciones, setPublicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState(null); // Estado para almacenar la publicación seleccionada
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     const fetchPublicaciones = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'Transportadores'));
+        const querySnapshot = await getDocs(collection(db, "Transportadores"));
         const publicacionesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setPublicaciones(publicacionesData);
+
+        // Filtrar publicaciones para que no muestre las del usuario actual
+        const publicacionesFiltradas = publicacionesData.filter(
+          (publicacion) => publicacion.userId !== user?.id
+        );
+
+        setPublicaciones(publicacionesFiltradas);
       } catch (error) {
-        console.error('Error al obtener los datos de Firebase:', error);
+        console.error("Error al obtener los datos de Firebase:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPublicaciones();
-  }, []);
+  }, [user]);
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Cargando datos...</p>;
+    return <p className="text-sm text-gray-500 select-none">Cargando datos...</p>;
   }
 
   return (
-    <div className="grid gap-2 p-2 border rounded-md bg-white shadow-md w-auto text-sm h-1/5">
-      {publicaciones.map((publicacion) => (
-        <div
-          key={publicacion.id}
-          className={`cursor-pointer p-2 rounded-md transition-all duration-200 
+    <div className="grid gap-2 p-2 border rounded-md bg-white shadow-md w-auto text-sm h-1/5 select-none">
+      {publicaciones.length > 0 ? (
+        publicaciones.map((publicacion) => (
+          <div
+            key={publicacion.id}
+            className={`cursor-pointer p-2 rounded-md transition-all duration-200 
             ${selectedId === publicacion.id ? "border-2 border-black" : "hover:bg-gray-200"}`}
-          onClick={() => {
-            setSelectedCar(publicacion);
-            setSelectedId(publicacion.id); // Guarda la ID de la publicación seleccionada
-          }}
-        >
-          <TransporterDetails publicacion={publicacion} />
-        </div>
-      ))}
+            onClick={() => {
+              setSelectedCar(publicacion);
+              setSelectedId(publicacion.id);
+            }}
+          >
+            <TransporterDetails publicacion={publicacion} />
+          </div>
+        ))
+      ) : null} {/* No muestra ningún texto si no hay transportadores */}
     </div>
   );
 };
 
 export default CarListOption;
+
+

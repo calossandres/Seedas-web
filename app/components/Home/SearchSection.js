@@ -1,5 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import InputItem from "./InputItem";
+import InputSource from "./InputSource";
+import InputDestination from "./InputDestination";
+import Merchandise from "./Merchandise"; // Importamos el componente
 import { SourceContext } from "../../context/SourceContext";
 import { DestinationContext } from "../../context/DestinationContext";
 import { UserIdContext } from "../../context/UserIdContext";
@@ -9,6 +11,7 @@ import CarListOption from "./CarListOption";
 import DateSelector from "./DateSelector";
 import InputPhone from "./InputPhone";
 import InputWeight from "./InputWeight";
+import { useUser } from "@clerk/nextjs";
 
 const calculatePrice = (distance, weight, tarifaBase) => {
   const baseRate = distance > 300 ? 2500 : 2000;
@@ -20,20 +23,16 @@ function SearchSection() {
   const { source } = useContext(SourceContext);
   const { destination } = useContext(DestinationContext);
   const userId = useContext(UserIdContext);
+  const { user } = useUser();
 
   const [price, setPrice] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
   const [workingHours, setWorkingHours] = useState({ date: "", start: "", end: "" });
   const [weight, setWeight] = useState(0);
   const [phone, setPhone] = useState("");
+  const [merchandiseData, setMerchandiseData] = useState({ type: "", description: "" });
   const router = useRouter();
 
-  const calculatePrice = (distance, weight, tarifaBase) => {
-    const baseRate = distance > 300 ? 2500 : 2000; 
-    const weightFactor = Math.ceil(weight / 200);  
-    return (tarifaBase * distance * (baseRate / 1000) * weightFactor).toFixed(2);
-  };
-  
   useEffect(() => {
     if (source && destination && selectedCar && weight > 0) {
       const R = 6371;
@@ -46,26 +45,28 @@ function SearchSection() {
           Math.sin(dLng / 2) * Math.sin(dLng / 2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const dist = R * c;
-  
+
       const calculatedPrice = calculatePrice(dist, weight, selectedCar.tarifaBase);
       setPrice(calculatedPrice);
     } else {
       setPrice(null);
     }
   }, [source, destination, selectedCar, weight]);
+
   const handlePayment = async (paymentMethod) => {
     if (!source || !destination || !selectedCar || !workingHours.date || weight <= 0 || !phone) {
       alert("Por favor, completa todos los campos antes de continuar.");
       return;
     }
 
-    if (!userId) {
-      alert("No se encontró el userId. Por favor, inicia sesión nuevamente.");
+    if (!userId || !user) {
+      alert("No se encontró el userId o el nombre del usuario. Por favor, inicia sesión nuevamente.");
       return;
     }
 
     const ProductoresData = {
       userId,
+      userName: user.fullName || "Usuario Desconocido",
       source,
       destination,
       vehicle: selectedCar.name,
@@ -74,6 +75,7 @@ function SearchSection() {
       workingHours,
       phone,
       paymentMethod,
+      merchandise: merchandiseData, // Agregamos los datos de la mercancía
     };
 
     try {
@@ -88,20 +90,13 @@ function SearchSection() {
 
   return (
     <div className="p-4 border rounded-xl">
-      <InputItem type="source" />
-      <InputItem type="destination" />
-      <InputPhone phone={phone} setPhone={setPhone} />
+      <InputSource type="source" />
+      <InputDestination type="destination" />
+      <Merchandise setMerchandiseData={setMerchandiseData} /> 
+      <InputPhone phone={phone} setPhone={setPhone} />            
       <InputWeight weight={weight} setWeight={setWeight} />
       <CarListOption setSelectedCar={setSelectedCar} />
       <DateSelector setWorkingHours={setWorkingHours} />
-      
-      {selectedCar && (
-        <div className="p-2 border rounded-md shadow-md bg-gray-100 mt-4">
-          <p className="text-lg font-semibold">Transportador seleccionado:</p>
-          <p><strong>Nombre:</strong> {selectedCar.name}</p>
-          <p><strong>Tarifa base:</strong> ${selectedCar.amount?.toLocaleString("es-CO")} COP</p>
-        </div>
-      )}
 
       {price && (
         <div className="mt-4">
@@ -119,3 +114,4 @@ function SearchSection() {
 }
 
 export default SearchSection;
+
