@@ -7,6 +7,7 @@ import { VehSourceContext } from '../context/VehSourceContext';
 import VehMapbox from '../components/Home/VehMapbox';
 import VehSearchSection from '../components/Home/VehSearchSection';
 import VehContain from "../components/Home/VehContain";
+import VehSolicitudes from "../components/Home/VehSolicitudes";
 import { VehUserIdContext } from "../context/VehUserIdContext";
 
 export default function TransportPage() {
@@ -30,6 +31,10 @@ export default function TransportPage() {
               <div className="mb-0">
                 <VehMapbox />
               </div>
+              <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Panel del Transportador</h1>
+      <VehSolicitudes />
+    </div>
               <div className=" p-6
                bg-white border rounded shadow-md w-full mt-0">
                 <VehContain />

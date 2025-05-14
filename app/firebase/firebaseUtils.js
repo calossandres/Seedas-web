@@ -2,7 +2,7 @@ import {
   doc, 
   setDoc, 
   deleteDoc, 
-  collection, 
+  collection,  
   query, 
   where, 
   getDocs 
@@ -12,21 +12,21 @@ import { db } from "./config"; // Configuración de Firebase
 // 📌 Función para generar un ID único basado en el usuario y el tiempo
 const generateUniqueId = (userId) => `${userId}_${Date.now()}`;
 
-// 🔹 Guardar una publicación en Firestore (evita [object Object])
+// 🔹 Guardar una publicación en Firestore (varias publicaciones por usuario)
 export const saveProductoresToFirestore = async (data) => {
   try {
     if (!data?.userId) throw new Error("El userId es nulo o indefinido");
 
-    const uniqueId = generateUniqueId(data.userId); // ID único
-    const docRef = doc(db, "Productores", uniqueId);
+    const uniqueId = generateUniqueId(data.userId); // ID único para múltiples publicaciones
+    const docRef = doc(db, "Productores", uniqueId); // Colección general: Productores
 
-    // Asegurarnos de que no hay valores complejos (objetos anidados)
+    // Asegurarse de que no hay objetos anidados complejos
     const sanitizedData = JSON.parse(JSON.stringify(data));
 
     await setDoc(docRef, {
       ...sanitizedData,
-      id: uniqueId, 
-      createdAt: new Date().toISOString(), // Timestamp
+      id: uniqueId,
+      createdAt: new Date().toISOString(), // Timestamp ISO
     });
 
     console.log("📌 Publicación guardada correctamente.");
@@ -37,7 +37,7 @@ export const saveProductoresToFirestore = async (data) => {
   }
 };
 
-// 🔹 Obtener publicaciones de un usuario (evita [object Object])
+// 🔹 Obtener publicaciones de un usuario
 export const getUserPublications = async (userId) => {
   try {
     if (!userId) throw new Error("El userId es nulo o indefinido");
@@ -45,7 +45,6 @@ export const getUserPublications = async (userId) => {
     const q = query(collection(db, "Productores"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
 
-    // Convertir los documentos a objetos planos
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
     console.error("❌ Error al obtener publicaciones:", error);
@@ -53,7 +52,7 @@ export const getUserPublications = async (userId) => {
   }
 };
 
-// 🔹 Eliminar una publicación en Firestore
+// 🔹 Eliminar una publicación
 export const deletePublication = async (id) => {
   try {
     if (!id) throw new Error("El id de la publicación es nulo o indefinido");
@@ -65,3 +64,4 @@ export const deletePublication = async (id) => {
     throw error;
   }
 };
+

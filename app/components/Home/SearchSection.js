@@ -1,29 +1,36 @@
+"use client";
+
 import React, { useContext, useEffect, useState } from "react";
-import InputSource from "./InputSource";
-import InputDestination from "./InputDestination";
-import Merchandise from "./Merchandise"; // Importamos el componente
 import { SourceContext } from "../../context/SourceContext";
 import { DestinationContext } from "../../context/DestinationContext";
 import { UserIdContext } from "../../context/UserIdContext";
 import { useRouter } from "next/navigation";
-import { saveProductoresToFirestore } from "../../firebase/firebaseUtils";
-import CarListOption from "./CarListOption";
-import DateSelector from "./DateSelector";
-import InputPhone from "./InputPhone";
-import InputWeight from "./InputWeight";
 import { useUser } from "@clerk/nextjs";
 
+import { saveProductoresToFirestore } from "../../firebase/firebaseUtils";
+import { saveSolicitudToFirestore } from "../../firebase/solicitudesPen";
+
+import CarListOption from "./CarListOption";
+import InputSource from "./InputSource";
+import InputDestination from "./InputDestination";
+import InputPhone from "./InputPhone";
+import InputWeight from "./InputWeight";
+import Merchandise from "./Merchandise";
+import DateSelector from "./DateSelector";
+
+// Cálculo estimado del precio
 const calculatePrice = (distance, weight, tarifaBase) => {
   const baseRate = distance > 300 ? 2500 : 2000;
   const weightFactor = Math.ceil(weight / 200);
-  return (tarifaBase * distance * (baseRate / 1000) * weightFactor).toFixed(2);
+  return tarifaBase * distance * (baseRate / 1000) * weightFactor;
 };
 
 function SearchSection() {
   const { source } = useContext(SourceContext);
   const { destination } = useContext(DestinationContext);
-  const userId = useContext(UserIdContext);
-  const { user } = useUser();
+  const { userId } = useContext(UserIdContext);
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
 
   const [price, setPrice] = useState(null);
   const [selectedCar, setSelectedCar] = useState(null);
@@ -31,60 +38,108 @@ function SearchSection() {
   const [weight, setWeight] = useState(0);
   const [phone, setPhone] = useState("");
   const [merchandiseData, setMerchandiseData] = useState({ type: "", description: "" });
-  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Calcular distancia y precio
   useEffect(() => {
     if (source && destination && selectedCar && weight > 0) {
-      const R = 6371;
+      const R = 6371; // km
       const dLat = (destination.lat - source.lat) * (Math.PI / 180);
       const dLng = (destination.lng - source.lng) * (Math.PI / 180);
       const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLat / 2) ** 2 +
         Math.cos(source.lat * (Math.PI / 180)) *
           Math.cos(destination.lat * (Math.PI / 180)) *
-          Math.sin(dLng / 2) * Math.sin(dLng / 2);
+          Math.sin(dLng / 2) ** 2;
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      const dist = R * c;
+      const distance = R * c;
 
-      const calculatedPrice = calculatePrice(dist, weight, selectedCar.tarifaBase);
-      setPrice(calculatedPrice);
+      const calculatedPrice = calculatePrice(distance, weight, selectedCar.tarifaBase);
+      setPrice(calculatedPrice.toFixed(2));
     } else {
       setPrice(null);
     }
   }, [source, destination, selectedCar, weight]);
 
+  const validateForm = () => {
+    const errors = [];
+    if (!source) errors.push("origen");
+    if (!destination) errors.push("destino");
+    if (!selectedCar) errors.push("vehículo");
+    if (!workingHours.date) errors.push("fecha");
+    if (weight <= 0) errors.push("peso");
+    if (!phone) errors.push("teléfono");
+
+    if (errors.length > 0) {
+      alert(`Por favor complete: ${errors.join(", ")}`);
+      return false;
+    }
+
+    if (!userId || !isLoaded || !user) {
+      alert("Debe iniciar sesión para continuar");
+      return false;
+    }
+
+    return true;
+  };
+
+  const getUserDisplayName = (user) => {
+    if (!user) return "Usuario";
+    return (
+      user.fullName ||
+      user.username ||
+      user.primaryEmailAddress?.emailAddress ||
+      "Usuario"
+    );
+  };
+
   const handlePayment = async (paymentMethod) => {
-    if (!source || !destination || !selectedCar || !workingHours.date || weight <= 0 || !phone) {
-      alert("Por favor, completa todos los campos antes de continuar.");
-      return;
-    }
-
-    if (!userId || !user) {
-      alert("No se encontró el userId o el nombre del usuario. Por favor, inicia sesión nuevamente.");
-      return;
-    }
-
-    const ProductoresData = {
-      userId,
-      userName: user.fullName || "Usuario Desconocido",
-      source,
-      destination,
-      vehicle: selectedCar.name,
-      price,
-      weight,
-      workingHours,
-      phone,
-      paymentMethod,
-      merchandise: merchandiseData, // Agregamos los datos de la mercancía
-    };
+    if (!validateForm()) return;
+    setIsSubmitting(true);
 
     try {
-      await saveProductoresToFirestore(ProductoresData);
-      alert("Publicación creada exitosamente.");
+      const userName = getUserDisplayName(user);
+
+      // 1. Guardar publicación en Productores
+      const publicationId = await saveProductoresToFirestore({
+        userId,
+        userName,
+        source,
+        destination,
+        vehicle: selectedCar.vehicle,
+        price,
+        weight,
+        workingHours,
+        phone,
+        paymentMethod,
+        merchandise: merchandiseData,
+        status: "pendiente",
+      });
+
+      // 2. Crear solicitud para transportador
+      await saveSolicitudToFirestore({
+        productorId: userId,
+        productorName: userName,
+        transportadorId: selectedCar.userId,
+        transportadorName: selectedCar.userName || "Transportador",
+        publicationId, // vínculo a la publicación
+        source,
+        destination,
+        price,
+        weight,
+        vehicle: selectedCar.vehicle,
+        workingHours,
+        paymentMethod,
+        merchandise: merchandiseData,
+        status: "pendiente",
+      });
+
       router.push("/zonaTrabajo");
     } catch (error) {
-      console.error("Error al guardar los datos:", error);
-      alert("Hubo un error al guardar la información. Por favor, inténtalo nuevamente.");
+      console.error("Error al enviar los datos:", error);
+      alert("Hubo un error al guardar los datos. Intenta nuevamente.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -92,8 +147,8 @@ function SearchSection() {
     <div className="p-4 border rounded-xl">
       <InputSource type="source" />
       <InputDestination type="destination" />
-      <Merchandise setMerchandiseData={setMerchandiseData} /> 
-      <InputPhone phone={phone} setPhone={setPhone} />            
+      <InputPhone phone={phone} setPhone={setPhone} />
+      <Merchandise setMerchandiseData={setMerchandiseData} />
       <InputWeight weight={weight} setWeight={setWeight} />
       <CarListOption setSelectedCar={setSelectedCar} />
       <DateSelector setWorkingHours={setWorkingHours} />
@@ -101,11 +156,23 @@ function SearchSection() {
       {price && (
         <div className="mt-4">
           <p className="text-lg font-bold">Precio estimado: ${price} pesos</p>
-          <button onClick={() => handlePayment("online")} className="bg-blue-500 text-white px-4 py-2 rounded-lg m-2">
-            Pagar en línea
+          <button
+            onClick={() => handlePayment("online")}
+            disabled={isSubmitting}
+            className={`bg-blue-500 text-white px-4 py-2 rounded-lg m-2 ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {isSubmitting ? "Procesando..." : "Pagar en línea"}
           </button>
-          <button onClick={() => handlePayment("cash")} className="bg-gray-500 text-white px-4 py-2 rounded-lg m-2">
-            Pagar en efectivo
+          <button
+            onClick={() => handlePayment("cash")}
+            disabled={isSubmitting}
+            className={`bg-gray-600 text-white px-4 py-2 rounded-lg m-2 ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {isSubmitting ? "Procesando..." : "Pagar en efectivo"}
           </button>
         </div>
       )}
@@ -114,4 +181,3 @@ function SearchSection() {
 }
 
 export default SearchSection;
-
