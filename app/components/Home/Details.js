@@ -53,10 +53,7 @@ const Details = ({ publicacion }) => {
         <p><strong>Descripción:</strong> {publicacion.merchandise?.description || "No especificado"}</p>
       )}
       <p><strong>Fecha:</strong> {publicacion.workingHours?.date || "No especificado"}</p>
-      <p>
-        <strong>Horario:</strong>{" "}
-        {publicacion.workingHours?.start || "?"} - {publicacion.workingHours?.end || "?"}
-      </p>
+     
       {publicacion.vehicle && <p><strong>Vehículo:</strong> {publicacion.vehicle}</p>}
       {publicacion.phone && <p><strong>Teléfono:</strong> {publicacion.phone}</p>}
       {publicacion.paymentMethod && <p><strong>Método de pago:</strong> {publicacion.paymentMethod}</p>}

@@ -1,15 +1,25 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 
 const DateSelector = ({ setWorkingHours }) => {
   const [date, setDate] = useState("");
+  const [minDate, setMinDate] = useState("");
 
   useEffect(() => {
-    // Setear la fecha actual al abrir el componente
     const today = new Date();
+
+    // Hoy como mínimo
     const todayStr = today.toISOString().split("T")[0];
     setDate(todayStr);
-  }, []);
+    setMinDate(todayStr);
+
+    // Guardar en workingHours el valor inicial (hoy)
+    setWorkingHours((prev) => ({
+      ...prev,
+      date: todayStr,
+    }));
+  }, [setWorkingHours]);
 
   const handleChange = (e) => {
     const newDate = e.target.value;
@@ -22,7 +32,7 @@ const DateSelector = ({ setWorkingHours }) => {
 
   const handleBlur = () => {
     if (!date) {
-      alert("Recuerda escoger para cuándo necesitas el transporte.");
+      alert("Recuerda escoger la fecha en la que necesitas el transporte.");
     }
   };
 
@@ -35,13 +45,16 @@ const DateSelector = ({ setWorkingHours }) => {
         type="date"
         id="date"
         value={date}
+        min={minDate} // Solo permite escoger fechas desde hoy
         onChange={handleChange}
         onBlur={handleBlur}
         className="w-full p-2 rounded-lg bg-gray-100 focus:outline-none"
       />
+      <p className="text-xs text-gray-500 mt-1">
+        Solo se pueden escoger fechas desde hoy en adelante.
+      </p>
     </div>
   );
 };
 
 export default DateSelector;
-
