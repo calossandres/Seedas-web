@@ -12,26 +12,22 @@ export default function Home() {
         <p className="text-xl"> Somos la nueva forma de conectar productores con transportadores de manera eficiente y colaborativa.</p>
       </header>
 
-      {/* Image Section */}
-      <section className="mb-8">
-        <Image src="/LOGO-SEEDAS.jpg" alt="Agriculture" width={800} height={400} className="rounded-lg shadow-lg" />
-      </section>
-
+  
       {/* Text and Image Sections */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 w-full max-w-5xl px-4">
         <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-2">Productores</h2>
-          <p className="text-center mb-4">Encuentra a los mejores productores de la región.</p>
+          <p className="text-center mb-4">Accede a una red de transporte confiable para mover tu producción.</p>
           <Image src="/LOGO-SEEDAS.jpg" alt="Farmers" width={300} height={200} className="rounded-lg" />
         </div>
         <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-2">Transportadores</h2>
-          <p className="text-center mb-4">Conectamos con transportadores confiables.</p>
+          <p className="text-center mb-4">Consigue trabajos logísticos fácilmente con productores Y usuarios verificados.</p>
           <Image src="/LOGO-SEEDAS.jpg" alt="Transporters" width={300} height={200} className="rounded-lg" />
         </div>
         <div className="flex flex-col items-center bg-gray-100 p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-2">Seedas</h2>
-          <p className="text-center mb-4">plataforma web Seedas versión 1.0.8</p>
+          <p className="text-center mb-4">Explora la plataforma Seedas: rápida, segura y basada en tecnología moderna.</p>
           <Image src="/LOGO-SEEDAS.jpg" alt="Transporters" width={300} height={200} className="rounded-lg" />
         </div>
       </section>

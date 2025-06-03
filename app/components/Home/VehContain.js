@@ -10,7 +10,7 @@ const VehContain = () => {
   const [publicaciones, setPublicaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isOpen, setIsOpen] = useState(false); // 👈 Para abrir/cerrar
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!userId) {
@@ -21,7 +21,7 @@ const VehContain = () => {
     const fetchUserPublications = async () => {
       try {
         const q = query(
-          collection(db, "Transportadores"),
+          collection(db, "VehComunitario"),
           where("userId", "==", userId)
         );
         const querySnapshot = await getDocs(q);
@@ -43,10 +43,10 @@ const VehContain = () => {
   }, [userId]);
 
   if (loading)
-    return <p className="text-gray-600">Cargando publicaciones...</p>;
+    return <p className="text-black">Cargando publicaciones...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
   if (publicaciones.length === 0)
-    return <p className="text-gray-600">No tienes publicaciones disponibles.</p>;
+    return <p className="text-black">No tienes publicaciones disponibles.</p>;
 
   return (
     <div className="p-4 border rounded bg-white shadow-md">

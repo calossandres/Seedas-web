@@ -134,8 +134,11 @@ function SearchSection() {
         merchandise: merchandiseData,
         status: "pendiente",
       });
-
-      router.push("/zonaTrabajo");
+   if (paymentMethod === "cash") {
+        alert("Ya se le envió la solicitud al transportador. Estate pendiente que acepte.");
+      } else {
+        router.push("/zonaTrabajo");
+      }
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       alert("Hubo un error al guardar los datos. Intenta nuevamente.");

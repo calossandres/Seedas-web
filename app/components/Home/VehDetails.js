@@ -1,52 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot, deleteDoc, doc, getDocs } from "firebase/firestore";
+import React from "react";
+import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import VehProductorCard from "./VehProductorCard";
 
 const VehDetails = ({ publicacion }) => {
-  const [productorAsignado, setProductorAsignado] = useState(null);
-
-  useEffect(() => {
-    if (!publicacion?.id) return;
-
-    const q = query(
-      collection(db, "Solicitudes"),
-      where("publicationId", "==", publicacion.id),
-      where("status", "==", "confirmado")
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => doc.data());
-      if (data.length > 0) {
-        setProductorAsignado(data[0]);
-      } else {
-        setProductorAsignado(null);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [publicacion?.id]);
-
   const handleDelete = async () => {
     if (!publicacion?.id) return;
 
     try {
-      await deleteDoc(doc(db, "Transportadores", publicacion.id));
-
-      const solicitudesQuery = query(
-        collection(db, "Solicitudes"),
-        where("publicationId", "==", publicacion.id)
-      );
-
-      const solicitudesSnapshot = await getDocs(solicitudesQuery);
-      const deletePromises = solicitudesSnapshot.docs.map((docSnapshot) =>
-        deleteDoc(doc(db, "Solicitudes", docSnapshot.id))
-      );
-
-      await Promise.all(deletePromises);
-
-      alert("Publicación y solicitudes eliminadas correctamente.");
+      await deleteDoc(doc(db, "VehComunitario", publicacion.id));
+      alert("Publicación eliminada correctamente.");
     } catch (error) {
       console.error("Error eliminando publicación:", error);
       alert("Ocurrió un error al eliminar la publicación. Intenta nuevamente.");
@@ -68,11 +31,20 @@ const VehDetails = ({ publicacion }) => {
       <p><strong>Asientos Disponibles:</strong> {publicacion.seats || "No especificado"}</p>
       <p><strong>Método de Pago:</strong> {publicacion.paymentMethod || "No especificado"}</p>
 
-      {/* Mostrar productor si hay solicitud confirmada */}
-      {productorAsignado ? (
-        <VehProductorCard productor={productorAsignado} />
+      {/* Mostrar suscriptores si existen */}
+      {publicacion.suscriptores && publicacion.suscriptores.length > 0 ? (
+        <div className="mt-4">
+          <h4 className="font-bold mb-2 text-green-700">Usuarios Suscritos:</h4>
+          <ul className="list-disc list-inside">
+            {publicacion.suscriptores.map((suscriptor, index) => (
+              <li key={index}>
+                {suscriptor.nombre} - {suscriptor.telefono}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
-        <p className="text-yellow-600 mt-4"><strong>Productor:</strong> No asignado</p>
+        <p className="text-yellow-600 mt-4"><strong>Usuarios Suscritos:</strong> Ninguno</p>
       )}
 
       {/* Botón para eliminar */}
