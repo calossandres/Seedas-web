@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase/config";
+import Afinalizar from "./Afinalizar";
 
 const Solicitudes = () => {
   const { user, isLoaded } = useUser();
@@ -69,20 +70,22 @@ const Solicitudes = () => {
             className="p-3 border rounded bg-gray-50 shadow-sm hover:bg-gray-100 transition mb-2"
           >
             <p><strong>🧑 Transportador:</strong> {solicitud.transportadorName || "No especificado"}</p>
-              <p><strong>📍 Origen:</strong> {solicitud.source?.name || "No especificado"}</p>
-              <p><strong>📍 Destino:</strong> {solicitud.destination?.name || "No especificado"}</p>
-               <p><strong>💰 Precio:</strong> ${parseFloat(solicitud.price).toLocaleString("es-CO")} COP</p>              
-                <p><strong>📅Fecha:</strong> {solicitud.createdAt ? new Date(solicitud.createdAt).toLocaleDateString() : "No especificado"}</p>
-                <p>
-                  <strong>Estado:</strong>{" "}
-              <span
-                className={`${
-                  solicitud.status === "confirmado" ? "text-green-600" : "text-yellow-500"
-                } font-semibold`}
-              >
+            <p><strong>📍 Origen:</strong> {solicitud.source?.name || "No especificado"}</p>
+            <p><strong>📍 Destino:</strong> {solicitud.destination?.name || "No especificado"}</p>
+            <p><strong>💰 Precio:</strong> ${parseFloat(solicitud.price).toLocaleString("es-CO")} COP</p>
+            <p><strong>📅 Fecha:</strong> {solicitud.createdAt ? new Date(solicitud.createdAt).toLocaleDateString() : "No especificado"}</p>
+            <p>
+              <strong>Estado:</strong>{" "}
+              <span className={`${solicitud.status === "confirmado" ? "text-green-600" : "text-yellow-500"} font-semibold`}>
                 {solicitud.status}
               </span>
             </p>
+
+            <Afinalizar
+              solicitudId={solicitud.id}
+              enCamino={solicitud.enCamino}
+              statusInicial={solicitud.status}
+            />
           </div>
         ))
       )}
@@ -91,4 +94,3 @@ const Solicitudes = () => {
 };
 
 export default Solicitudes;
-
