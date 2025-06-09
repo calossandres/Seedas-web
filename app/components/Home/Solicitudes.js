@@ -81,11 +81,13 @@ const Solicitudes = () => {
               </span>
             </p>
 
-            <Afinalizar
+           <Afinalizar
               solicitudId={solicitud.id}
-              enCamino={solicitud.enCamino}
+              enCamino={solicitud.status === "confirmado"}
               statusInicial={solicitud.status}
+              transportadorId={solicitud.transportadorId}
             />
+
           </div>
         ))
       )}

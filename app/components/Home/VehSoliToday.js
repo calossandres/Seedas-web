@@ -81,10 +81,12 @@ const VehSoliToday = () => {
               </span>
             </p>
 
-            <Avisar
-              solicitudId={solicitud.id}
-              enCaminoInicial={solicitud.enCamino}
-            />
+              <Avisar
+                solicitudId={solicitud.id}
+                enCaminoInicial={solicitud.enCamino}
+                status={solicitud.status}
+              />
+
           </div>
         ))
       )}

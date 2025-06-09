@@ -3,9 +3,11 @@
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const Afinalizar = ({ solicitudId, enCamino, statusInicial, onUpdate }) => {
+const Afinalizar = ({ solicitudId, enCamino, statusInicial, transportadorId, onUpdate }) => {
   const [status, setStatus] = useState(statusInicial);
+  const router = useRouter();
 
   const handleFinalizar = async () => {
     try {
@@ -14,6 +16,11 @@ const Afinalizar = ({ solicitudId, enCamino, statusInicial, onUpdate }) => {
       });
       setStatus("finalizado");
       if (onUpdate) onUpdate();
+
+      // Redirigir a la página del transportador
+      if (transportadorId) {
+        router.push(`/userpage/${transportadorId}`);
+      }
     } catch (error) {
       console.error("Error al finalizar servicio:", error);
     }

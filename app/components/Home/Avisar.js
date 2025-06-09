@@ -4,7 +4,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useState } from "react";
 
-const Avisar = ({ solicitudId, enCaminoInicial, onUpdate }) => {
+const Avisar = ({ solicitudId, enCaminoInicial, status, onUpdate }) => {
   const [enCamino, setEnCamino] = useState(enCaminoInicial);
 
   const handleAvisar = async () => {
@@ -18,6 +18,10 @@ const Avisar = ({ solicitudId, enCaminoInicial, onUpdate }) => {
       console.error("Error al marcar como en camino:", error);
     }
   };
+
+  if (status !== "confirmado") {
+    return null; // No renderiza nada si no está confirmado
+  }
 
   return enCamino ? (
     <p className="text-blue-600 font-semibold mt-2">Has avisado que vas en camino 🚚</p>
