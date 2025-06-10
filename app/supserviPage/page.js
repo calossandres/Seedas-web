@@ -30,7 +30,7 @@ export default function TermsOfService() {
           Seedas puede cancelar cuentas que violen estos términos.
         </p>
         <p className="text-gray-700">
-          Para consultas o dudas, contáctanos en <a href="mailto:soporte@seedas.com" className="text-blue-500 underline">soporte@seedas.com</a>.
+          Para consultas o dudas, contáctanos en <a href="carlosandress2811@gmail.com" className="text-blue-500 underline">soporte@seedas.com</a>.
         </p>
       </div>
     );

@@ -9,11 +9,11 @@ export default function Contact() {
           <li className="text-gray-700">
             <strong>Correo:</strong>{' '}
             <a href="mailto:soporte@seedas.com" className="text-blue-500 underline">
-              soporte@seedas.com
+              carlosandress2811@gmail.com
             </a>
           </li>
           <li className="text-gray-700">
-            <strong>Teléfono:</strong> +57 320 123 4567
+            <strong>Teléfono:</strong> +57 3232736496
           </li>
           <li className="text-gray-700">
             <strong>Dirección:</strong> Calle 123, Neiva, Huila, Colombia
