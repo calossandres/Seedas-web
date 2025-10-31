@@ -1,12 +1,42 @@
-import { doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from './config';
+// firebaseVeh.js
+import { doc, setDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { db, storage } from "./config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// Función para guardar datos del transportador en Firestore con múltiples publicaciones por usuario
-export const saveTransportadoresToFirestore = async (data) => {
+// 🔹 Generar un ID único
+const generateUniqueId = (userId) => {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return `${userId}_${crypto.randomUUID()}`;
+  }
+  return `${userId}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+};
+
+// ✅ Subir imagen a Firebase Storage
+export const uploadImageToStorage = async (file, userId) => {
+  try {
+    if (!file) throw new Error("No se seleccionó ninguna imagen");
+    if (!userId) throw new Error("El userId es obligatorio para subir imágenes");
+
+    const uniqueName = `${userId}_${Date.now()}_${file.name}`;
+    const storageRef = ref(storage, `vehiculos/${uniqueName}`);
+
+    await uploadBytes(storageRef, file);
+    const imageUrl = await getDownloadURL(storageRef);
+
+    console.log("✅ Imagen subida correctamente:", imageUrl);
+    return imageUrl;
+  } catch (error) {
+    console.error("❌ Error al subir imagen:", error);
+    throw error;
+  }
+};
+
+// ✅ Guardar transporte del PRODUCTOR
+export const saveVehProductorToFirestore = async (data) => {
   try {
     if (!data?.userId) throw new Error("El userId es obligatorio");
 
-    const uniqueId = `${data.userId}_${crypto.randomUUID()}`; // ID único basado en el usuario
+    const uniqueId = generateUniqueId(data.userId);
     const docRef = doc(db, "Transportadores", uniqueId);
 
     await setDoc(docRef, {
@@ -15,25 +45,22 @@ export const saveTransportadoresToFirestore = async (data) => {
       createdAt: new Date().toISOString(),
     });
 
-    console.log("Transportador guardado correctamente.");
+    console.log("✅ Transporte productor guardado correctamente.");
     return uniqueId;
   } catch (error) {
-    console.error("Error al guardar el transportador:", error);
+    console.error("❌ Error al guardar transporte productor:", error);
     throw error;
   }
 };
 
-// Función para obtener todas las publicaciones de un transportador por userId
-export const getUserTransporters = async (userId) => {
+// ✅ Obtener publicaciones PRODUCTOR de un usuario
+export const getUserVehProductor = async (userId) => {
   try {
-    if (!userId) throw new Error("El userId es obligatorio");
-
     const q = query(collection(db, "Transportadores"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (error) {
-    console.error("Error al obtener transportadores:", error);
+    console.error("❌ Error al obtener transportes productor:", error);
     throw error;
   }
 };

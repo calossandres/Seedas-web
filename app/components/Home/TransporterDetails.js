@@ -9,13 +9,16 @@ const TransporterDetails = ({ publicacion }) => {
     <div className="p-4 border rounded-md shadow-md flex items-center gap-4 select-none">
       {/* Imagen del transportador */}
       <div className="flex-shrink-0">
-        <Image
-          src={publicacion.image || "/source.png"}
-          width={120}
-          height={120}
-          alt={`Imagen de ${publicacion.userName || "transportador"}`}
-          className="rounded-md object-cover"
-        />
+       <Image
+        src={publicacion.images?.[0] || "/source.png"}
+        width={120}
+        height={120}
+        alt={`Imagen de ${publicacion.userName || "transportador"}`}
+        className="rounded-md object-cover"
+        unoptimized
+      />
+
+
       </div>
 
       {/* Información del transportador */}

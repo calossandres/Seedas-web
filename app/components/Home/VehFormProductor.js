@@ -4,7 +4,7 @@ import React, { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { VehSourceContext } from "../../context/VehSourceContext";
-import { saveTransportadoresToFirestore } from "../../firebase/firebaseVeh";
+import { saveVehProductorToFirestore } from "../../firebase/firebaseVeh";
 import VehInputSource from "./VehInputSource";
 import VehicleForm from "./VehicleForm";
 import VehImage from "./VehImage";
@@ -41,9 +41,9 @@ function VehFormProductor() {
     };
 
     try {
-      await saveTransportadoresToFirestore(data);
+      await saveVehProductorToFirestore(data);
       alert("¡Transporte para productor publicado con éxito!");
-      router.push("/zonaTrabajo");
+      router.push("/trasportaPage");
     } catch (err) {
       console.error("Error al guardar:", err);
       alert("Ocurrió un error. Intenta nuevamente.");
@@ -79,8 +79,9 @@ function VehFormProductor() {
           className="p-2 border rounded w-full"
         />
       </div>
-
       <VehImage images={images} setImages={setImages} />
+
+
 
       <button
         onClick={handleSubmit}

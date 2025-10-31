@@ -58,20 +58,23 @@ const VehContainProd = () => {
       {isOpen && (
         <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
           {publicaciones.map((pub) => (
-            
             <div key={pub.id} className="border border-gray-300 rounded p-4 bg-gray-50">
-               <div className="flex-shrink-0">
-                      <Image
-                        src={pub.image || "/source.png"}
-                        width={120}
-                        height={120}
-                        alt={`Imagen de ${pub.userName || "transportador"}`}
-                        className="rounded-md object-cover"
-                      />
-                    </div>
+              
+              <div className="flex-shrink-0 mb-2">
+                <Image
+                  src={pub.images?.[0] || "/source.png"}
+                  width={120}
+                  height={120}
+                  alt={`Imagen de ${pub.userName || "transportador"}`}
+                  className="rounded-md object-cover"
+                  unoptimized
+                />
+              </div>
+
               <p><strong>Origen:</strong> {pub.source?.name || "No especificado"}</p>
               <p><strong>Vehículo:</strong> {pub.vehicle || "No especificado"}</p>
               <p><strong>Fecha de publicación:</strong> {pub.createdAt ? new Date(pub.createdAt).toLocaleDateString() : "No especificado"}</p>
+
               <button
                 onClick={() => cancelarPublicacion(pub.id)}
                 className="mt-3 px-4 py-2 bg-[#800020] text-white rounded hover:bg-red-900 transition"
@@ -87,4 +90,3 @@ const VehContainProd = () => {
 };
 
 export default VehContainProd;
-
