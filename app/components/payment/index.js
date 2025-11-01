@@ -1,27 +1,24 @@
+// app/payment/index.js
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-interface PaymentProps {
-  price: number;
-}
-
 /**
- * Payment component that handles MercadoPago payment flow
- * @param {PaymentProps} props - Component properties containing payment details
- * @returns {JSX.Element} Payment component with payment button and status
+ * Componente Payment que maneja el flujo de pago con MercadoPago.
+ * @param {{ price: number }} props - Propiedades del componente con los detalles del pago.
+ * @returns {JSX.Element} Componente con el botón y estado de pago.
  */
-export default function Payment({ price }: PaymentProps): JSX.Element {
-  const [paymentLink, setPaymentLink] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  
+export default function Payment({ price }) {
+  const [paymentLink, setPaymentLink] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const router = useRouter();
 
   /**
-   * Creates payment preference and generates payment link
+   * Crea la preferencia de pago y genera el enlace de MercadoPago.
    */
-  const createPreference = async (): Promise<void> => {
+  const createPreference = async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -37,7 +34,7 @@ export default function Payment({ price }: PaymentProps): JSX.Element {
           quantity: 1,
           metadata: {
             text: "bolsa de datos que es lo que mercado pago me va a devolver",
-          }
+          },
         }),
       });
 
@@ -48,7 +45,7 @@ export default function Payment({ price }: PaymentProps): JSX.Element {
       const data = await response.json();
       setPaymentLink(data.init_point);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "Ha ocurrido un error");
       console.error("Payment error:", err);
     } finally {
       setIsLoading(false);
@@ -56,7 +53,7 @@ export default function Payment({ price }: PaymentProps): JSX.Element {
   };
 
   return (
-    <div className="text-center p-4 bg-white rounded-lg shadow-md max-w-md mx-auto">
+    <div className="text-center p-4 bg-white rounded-lg shadow-md max-w-md mx-auto mt-10">
       <button
         onClick={createPreference}
         disabled={isLoading}
@@ -66,12 +63,8 @@ export default function Payment({ price }: PaymentProps): JSX.Element {
         {isLoading ? "Procesando..." : "Generar Link de Pago"}
       </button>
 
-      {error && (
-        <div className="mt-4 text-red-500">
-          {error}
-        </div>
-      )}
-      
+      {error && <div className="mt-4 text-red-500">{error}</div>}
+
       {paymentLink && (
         <div className="mt-4">
           <p className="text-gray-700 font-semibold">Link de pago generado:</p>

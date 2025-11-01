@@ -1,3 +1,4 @@
+//layout.client.js
 "use client";
 import { ClerkProvider } from "@clerk/nextjs";
 import { esES } from "@clerk/localizations";

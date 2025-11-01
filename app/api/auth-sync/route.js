@@ -1,4 +1,6 @@
 //app/api/auth-sync/route.js
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { getAuth } from "@clerk/nextjs/server";
 import { initializeApp, cert, getApps } from "firebase-admin/app";
