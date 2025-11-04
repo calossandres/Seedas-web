@@ -9,16 +9,15 @@ function Header() {
   const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
-  // Color dinámico del header
-  const headerColor = pathname === '/trasportaPage' ? '#000E25' : '#212626';
+  // Cambiar color del header según la página
+  const headerColor = pathname === '/indexPage' ? '#000E25' : '#212626';
 
   const headerMenu = [
-    { id: 2, name: 'PRODUCTOR', icon: '/feo.jpg', link: '/indexPage', alt: 'Logo productor' },
-    { id: 1, name: 'TRANSPORTADOR', icon: '/logov.jpg', link: '/trasportaPage', alt: 'Logo transportador' },
-    { id: 3, name: 'TRANSPORTE EN COMUNIDAD', icon: '/logozonaTrabajo.jpg', link: '/zonaTrabajo', alt: 'Logo zona de trabajo' }
+    { id: 1, name: 'PRODUCTOR', icon: '/feo.jpg', link: '/indexPage', alt: 'Logo productor' },
+    { id: 2, name: 'TRANSPORTADOR', icon: '/logov.jpg', link: '/trasportaPage', alt: 'Logo transportador' },
+    { id: 3, name: 'TRANSPORTE EN COMUNIDAD', icon: '/logozonaTrabajo.jpg', link: '/zonaTrabajo', alt: 'Logo zona de trabajo' },
   ];
 
-  // Solo redirige a indexPage si el usuario está en la raíz
   useEffect(() => {
     if (isLoaded && isSignedIn && pathname === '/') {
       router.push('/indexPage');
@@ -26,41 +25,42 @@ function Header() {
   }, [isLoaded, isSignedIn, pathname, router]);
 
   const handleButtonClick = (name) => {
-    const link = headerMenu.find(item => item.name === name).link;
-    router.push(link);
+    const link = headerMenu.find(item => item.name === name)?.link;
+    if (link) router.push(link);
   };
 
   return (
     <header
-      className="p-4 md:p-5 border-b-[2px] border-gray-200"
+      className="p-4 md:p-5 border-b-2 border-gray-200"
       style={{ backgroundColor: headerColor }}
     >
-      <div className="container mx-auto flex flex-wrap items-center justify-between">
-        <a href="/indexPage" className="flex items-center gap-2">
+      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between">
+        {/* Logo redondo */}
+        <a href="/" className="flex items-center gap-2">
           <Image
             src="/LOGO-SEEDAS.jpg"
-            width={50}
-            height={70}
+            width={60}
+            height={60}
             alt="Logo SEEDAS"
-            className="cursor-pointer rounded-md"
+            className="rounded-full border-2 border-white shadow-md"
           />
           <span className="text-white text-lg font-semibold hidden md:block">SEEDAS</span>
         </a>
 
-        {/* SOLO SI ESTÁ AUTENTICADO */}
+        {/* Menú visible solo si está autenticado */}
         {isSignedIn && (
           <nav className="flex flex-wrap gap-4 md:gap-6 items-center">
             {headerMenu.map((item) => (
               <button
                 key={item.id}
-                className="flex gap-2 items-center bg-transparent text-white px-2 md:px-4 py-2 rounded-md hover:bg-gray-800 transition"
                 onClick={() => handleButtonClick(item.name)}
+                className="flex gap-2 items-center bg-transparent text-white px-2 md:px-4 py-2 rounded-md hover:bg-gray-800 transition"
               >
                 <Image
                   src={item.icon}
-                  width={20}
-                  height={20}
-                  alt={`Icono de ${item.name}`}
+                  width={22}
+                  height={22}
+                  alt={item.alt}
                   className="rounded-full"
                 />
                 <span className="text-sm md:text-base font-medium">{item.name}</span>
@@ -69,16 +69,21 @@ function Header() {
           </nav>
         )}
 
+        {/* Botones de sesión o usuario */}
         <div className="flex items-center gap-2 md:gap-4">
           {!isSignedIn && (
-            <div className="flex gap-2 md:gap-4">
-              <a href="/sign-in" className="hidden sm:block">
-                <button className="bg-gray-900 text-white px-4 py-2 rounded-md">Iniciar Sesión</button>
+            <>
+              <a href="/sign-in">
+                <button className="bg-gray-900 text-white px-3 md:px-4 py-2 rounded-md text-sm md:text-base">
+                  Iniciar Sesión
+                </button>
               </a>
-              <a href="/sign-up" className="hidden sm:block">
-                <button className="bg-gray-900 text-white px-4 py-2 rounded-md">Registrarse</button>
+              <a href="/sign-up">
+                <button className="bg-gray-900 text-white px-3 md:px-4 py-2 rounded-md text-sm md:text-base">
+                  Registrarse
+                </button>
               </a>
-            </div>
+            </>
           )}
           <UserButton />
         </div>

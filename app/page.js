@@ -3,71 +3,80 @@ import { useState } from "react";
 import Image from "next/image";
 
 export default function Home() {
-  const [showFirstImage, setShowFirstImage] = useState(true);
-
-  const toggleImage = () => {
-    setShowFirstImage(!showFirstImage);
-  };
+  const [showProducerImage, setShowProducerImage] = useState(true);
+  const [showTransporterImage, setShowTransporterImage] = useState(true);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-white">
+    <div className="flex flex-col items-center justify-center min-h-screen py-10 bg-gradient-to-b from-gray-50 to-gray-100">
       {/* Header Section */}
-      <header className="text-center mb-12 px-4">
-        <h1 className="text-5xl font-bold mb-4 text-gray-900">Bienvenido a Seedas</h1>
-        <p className="text-xl text-gray-700">
-          Somos la nueva forma de conectar productores con transportadores de manera eficiente, colaborativa y sin intermediarios.
+      <header className="text-center mb-14 px-4">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 tracking-tight">
+          Bienvenido a <span className="text-green-700">SEEDAS</span>
+        </h1>
+        <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+          Conectamos productores y transportadores rurales mediante una plataforma moderna, colaborativa y sin intermediarios.
         </p>
       </header>
 
-      {/* Text and Image Sections */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl px-4">
+      {/* Cards Section */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-10 w-full max-w-7xl px-6">
         {/* Productores */}
-        <div className="flex flex-col items-center bg-gray-100 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <h2 className="text-2xl font-semibold mb-2">Productores</h2>
-          <p className="text-center mb-4 text-gray-600">
-            Accede a una red de transporte confiable para movilizar tu producción y gestiona tus publicaciones como productor.
+        <div
+          onClick={() => setShowProducerImage(!showProducerImage)}
+          className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100"
+        >
+          <h2 className="text-xl md:text-2xl font-semibold mb-2 text-gray-900">Productores</h2>
+          <p className="text-center mb-4 text-gray-500 text-sm md:text-base leading-relaxed">
+            Publica tus productos agrícolas o pecuarios y encuentra transporte seguro y asequible.
+            <span className="block mt-1 text-gray-400 text-xs">(Haz clic para cambiar la imagen)</span>
           </p>
-          <Image
-            src="/productorPage.jpeg"
-            alt="Productor"
-            width={400}
-            height={300}
-            className="rounded-lg object-cover"
-          />
+          <div className="w-full overflow-hidden rounded-2xl shadow-md">
+            <Image
+              src={showProducerImage ? "/pageproductor.png" : "/pageproductorfoot.png"}
+              alt="Productores"
+              width={500}
+              height={350}
+              className="w-full h-[250px] md:h-[200px] object-contain transition duration-500 hover:scale-105"
+            />
+          </div>
         </div>
 
-        {/* Transportadores con cambio de imagen */}
+        {/* Transportadores */}
         <div
-          className="flex flex-col items-center bg-gray-100 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-          onClick={toggleImage}
+          onClick={() => setShowTransporterImage(!showTransporterImage)}
+          className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100"
         >
-          <h2 className="text-2xl font-semibold mb-2">Transportadores</h2>
-          <p className="text-center mb-4 text-gray-600">
-            Publica tus vehículos y consigue trabajo como transportador de carga agrícola, pecuaria y más. Haz clic para ver más opciones.
+          <h2 className="text-xl md:text-2xl font-semibold mb-2 text-gray-900">Transportadores</h2>
+          <p className="text-center mb-4 text-gray-500 text-sm md:text-base leading-relaxed">
+            Publica tus vehículos y recibe solicitudes de transporte agrícola, pecuario o comunitario.
+            <span className="block mt-1 text-gray-400 text-xs">(Haz clic para cambiar la imagen)</span>
           </p>
-          <Image
-            src={showFirstImage ? "/transporteProductorPage.jpeg" : "/transporteComPage.jpeg"}
-            alt="Transportador"
-            width={400}
-            height={300}
-            className="rounded-lg object-cover transition duration-300"
-          />
-          <p className="mt-2 text-sm text-gray-400">(Haz clic en la imagen para cambiar)</p>
+          <div className="w-full overflow-hidden rounded-2xl shadow-md">
+            <Image
+              src={showTransporterImage ? "/pagetrasportadorprod.png" : "/pagetransportadorcomu.png"}
+              alt="Transportadores"
+              width={500}
+              height={350}
+              className="w-full h-[250px] md:h-[200px] object-contain transition duration-500 hover:scale-105"
+            />
+          </div>
         </div>
 
         {/* Transporte comunitario */}
-        <div className="flex flex-col items-center bg-gray-100 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <h2 className="text-2xl font-semibold mb-2">Transporte comunitario</h2>
-          <p className="text-center mb-4 text-gray-600">
-            Explora u ofrece servicios de transporte comunitario, gestiona tus publicaciones y visualiza a los usuarios suscritos.
+        <div className="flex flex-col items-center bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-100">
+          <h2 className="text-xl md:text-2xl font-semibold mb-2 text-gray-900">Transporte comunitario</h2>
+          <p className="text-center mb-4 text-gray-500 text-sm md:text-base leading-relaxed">
+            Explora u ofrece transporte compartido entre comunidades rurales y gestiona tus publicaciones de forma fácil.
           </p>
-          <Image
-            src="/transporteComunitarioPage.jpeg"
-            alt="Transporte Comunitario"
-            width={400}
-            height={300}
-            className="rounded-lg object-cover"
-          />
+          <div className="w-full overflow-hidden rounded-2xl shadow-md">
+            <Image
+              src="/pagecomunitar.png"
+              alt="Transporte Comunitario"
+              width={500}
+              height={350}
+              className="w-full h-[250px] md:h-[200px] object-contain transition duration-500 hover:scale-105"
+            />
+          </div>
         </div>
       </section>
     </div>
